@@ -1,7 +1,8 @@
 from django.contrib import admin
-# from .models import Artwork, Blog
 
 # Register your models here.
-
-# admin.site.register(Artwork)
-# admin.site.register(Blog)
+# Admin registrations have been moved to their respective apps:
+# - Profile, Settings -> users/admin.py
+# - Post, Category, Tag, PostTag, Like, Share -> gallery/admin.py  
+# - Badge, UserBadge, Reward -> gamification/admin.py
+# - Moderation -> moderation/admin.py

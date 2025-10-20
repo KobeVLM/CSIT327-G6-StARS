@@ -1,0 +1,115 @@
+{% extends 'base/base.html' %} {% load static %} {% block title %}Gallery -
+StARS{% endblock %} {% block content %}
+<div class="gallery-container">
+  <div class="gallery-header">
+    <h1>Art Gallery</h1>
+    <p>Discover amazing artwork from our student community</p>
+    <a href="{% url 'gallery:upload' %}" class="btn btn-primary"
+      >Upload Artwork</a
+    >
+  </div>
+
+  <div class="gallery-grid">
+    {% for artwork in artworks %}
+    <div class="artwork-card">
+      {% if artwork.image %}
+      <img src="{{ artwork.image.url }}" alt="{{ artwork.title }}" />
+      {% endif %}
+      <div class="artwork-info">
+        <h3>{{ artwork.title }}</h3>
+        <p class="artist">by {{ artwork.user.username }}</p>
+        <p class="upload-date">{{ artwork.upload_date|date:"M d, Y" }}</p>
+      </div>
+    </div>
+    {% empty %}
+    <div class="no-artworks">
+      <p>No artworks uploaded yet. Be the first to share your art!</p>
+      <a href="{% url 'gallery:upload' %}" class="btn btn-primary"
+        >Upload Now</a
+      >
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .gallery-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .gallery-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .artwork-card {
+    background: #1f2937;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+
+  .artwork-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .artwork-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+  }
+
+  .artwork-info {
+    padding: 1rem;
+  }
+
+  .artwork-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+  }
+
+  .artist {
+    color: #7c3aed;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .upload-date {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .no-artworks {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: #9ca3af;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: #7c3aed;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #6d28d9;
+  }
+</style>
+{% endblock %}

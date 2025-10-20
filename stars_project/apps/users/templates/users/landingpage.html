@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student Artist Space</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'users/css/landingpage.css' %}" />
+  </head>
+  <body>
+    <!-- Top Navigation -->
+    <header class="top-nav">
+      <div class="nav-container">
+        <div class="nav-left">
+          <div class="logo-bg">
+            <!-- Palette SVG icon -->
+            <svg
+              width="24"
+              height="24"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="#fff"
+                stroke-width="2"
+                fill="#6366f1"
+              />
+              <circle cx="8" cy="10" r="1.5" fill="#fff" />
+              <circle cx="16" cy="10" r="1.5" fill="#fff" />
+              <circle cx="12" cy="15" r="1.5" fill="#fff" />
+            </svg>
+          </div>
+          <div>
+            <h1 class="site-title">Student Artist Space</h1>
+            <p class="site-desc">Create • Share • Inspire</p>
+          </div>
+        </div>
+        <div class="nav-right">
+          <div class="user-level">
+            <span class="star">&#11088;</span>
+            <span class="level-label">Level {{ level|default:1 }}</span>
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                style="width: {% widthratio level 10 100 %}%;"
+              ></div>
+            </div>
+            <span class="badge"
+              ><span class="trophy">&#127942;</span> {{ xp|default:0 }} XP</span
+            >
+          </div>
+          <div class="user-menu">
+            <img src="https://placehold.co/40x40" alt="Avatar" class="avatar" />
+            <span class="username">{{ user.username }}</span>
+            <div class="dropdown-menu">
+              <a href="#">Profile</a>
+              <a href="#">Settings</a>
+              <a href="{% url 'users:logout' %}">Log out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Django Messages -->
+    {% if messages %}
+    <div class="messages" style="padding: 1rem 2rem; background: #f0f4ff">
+      {% for message in messages %}
+      <div
+        class="alert alert-{{ message.tags }}"
+        style="
+          padding: 0.75rem 1rem;
+          margin-bottom: 0.5rem;
+          border-radius: 4px;
+          background: #d1fae5;
+          color: #065f46;
+          border: 1px solid #a7f3d0;
+        "
+      >
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="layout-flex">
+      <!-- Mobile Navigation -->
+      <nav class="mobile-nav">
+        <button class="nav-btn active">
+          <span class="nav-icon">&#8962;</span>
+          <span class="nav-label">Home</span>
+        </button>
+        <button class="nav-btn" onclick="window.location.href='#'">
+          <span class="nav-icon">&#128269;</span>
+          <span class="nav-label">Browse</span>
+        </button>
+        <button
+          class="nav-btn"
+          onclick="window.location.href='{% url 'gallery:upload' %}'"
+        >
+          <span class="nav-icon">&#8682;</span>
+          <span class="nav-label">Upload</span>
+        </button>
+        <button class="nav-btn">
+          <span class="nav-icon">&#128100;</span>
+          <span class="nav-label">Profile</span>
+        </button>
+      </nav>
+
+      <!-- Desktop Sidebar -->
+      <aside class="sidebar">
+        <nav class="sidebar-nav">
+          <button class="sidebar-btn active">
+            <span class="sidebar-icon">&#8962;</span>Home
+          </button>
+          <button class="sidebar-btn">
+            <span class="sidebar-icon">&#128269;</span> Browse
+          </button>
+          <button
+            class="sidebar-btn"
+            onclick="window.location.href='{% url 'gallery:upload' %}'"
+          >
+            <span class="sidebar-icon">&#8682;</span> Upload Artwork
+          </button>
+          {% comment %}
+          <button
+            class="sidebar-btn"
+            onclick="window.location.href='{% url 'gallery:gallery' %}'"
+          >
+            <span class="sidebar-icon">&#128221;</span> Write Blog
+          </button>
+          {% endcomment %}
+          <button class="sidebar-btn">
+            <span class="sidebar-icon">&#128100;</span> Profile
+          </button>
+        </nav>
+        <div class="quick-stats">
+          <h3>Quick Stats</h3>
+          <div class="stats-list">
+            <div class="stat-row">
+              <span>Artwork Created</span>
+              <span class="stat-value">{{ artwork_created|default:0 }}</span>
+            </div>
+            {% comment %}
+            <div class="stat-row">
+              <span>Blogs Written</span>
+              <span class="stat-value">{{ blogs_written|default:0 }}</span>
+            </div>
+            {% endcomment %}
+            <div class="stat-row">
+              <span>Total XP</span>
+              <span class="stat-value">{{ xp|default:0 }}</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Replace this with your page content -->
+        <div class="content-placeholder">
+          <h2>Welcome back, {{ user.first_name|default:user.username }}! 🎨</h2>
+          <p>
+            Ready to create and share your amazing artwork? Use the sidebar to
+            get started!
+          </p>
+
+          <div
+            style="
+              margin-top: 2rem;
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 1rem;
+            "
+          >
+            <div
+              style="
+                background: #f0f4ff;
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                text-align: center;
+              "
+            >
+              <h3 style="color: #6366f1; margin-bottom: 0.5rem">
+                Upload Artwork
+              </h3>
+              <p style="margin-bottom: 1rem; color: #6b7280">
+                Share your latest creations
+              </p>
+              <a
+                href="{% url 'gallery:upload' %}"
+                style="
+                  background: #6366f1;
+                  color: white;
+                  padding: 0.5rem 1rem;
+                  border-radius: 0.25rem;
+                  text-decoration: none;
+                "
+                >Get Started</a
+              >
+            </div>
+            {% comment %}
+            <div
+              style="
+                background: #f0f4ff;
+                padding: 1.5rem;
+                border-radius: 0.5rem;
+                text-align: center;
+              "
+            >
+              <h3 style="color: #6366f1; margin-bottom: 0.5rem">Write Blog</h3>
+              <p style="margin-bottom: 1rem; color: #6b7280">
+                Share your creative journey
+              </p>
+              {% endcomment %} {% comment %}
+              <a
+                href="{% url 'gallery:gallery' %}"
+                style="
+                  background: #6366f1;
+                  color: white;
+                  padding: 0.5rem 1rem;
+                  border-radius: 0.25rem;
+                  text-decoration: none;
+                "
+                >Start Writing</a
+              >
+              {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

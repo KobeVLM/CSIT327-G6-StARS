@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from gallery.models import Post
 
+# User Registration Form
 class RegisterForm(UserCreationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'johndoe123'}))
     email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'johndoe@gmail.com'}))
@@ -21,13 +21,7 @@ class RegisterForm(UserCreationForm):
             raise forms.ValidationError("Email already exists.")
         return email
 
-
+# User Login Form
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Username'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
-
-
-class ArtworkForm(forms.ModelForm):
-    class Meta:
-        model = Post
-        fields = ['title', 'file_url', 'file_type', 'visibility', 'category']

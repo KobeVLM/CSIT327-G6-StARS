@@ -1,0 +1,126 @@
+/* Container */
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f4ff 0%, #fff 60%, #e0e7ff 100%);
+  padding: 2rem;
+}
+
+.register-box {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Header */
+.register-header {
+  text-align: center;
+}
+
+.logo-circle {
+  background: #6366f1;
+  border-radius: 9999px;
+  padding: 1rem;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.register-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.register-header p {
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+/* Card */
+.register-card {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  margin-top: 2rem;
+  padding: 2rem;
+}
+
+.card-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.card-header p {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+/* Form */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-group label {
+  font-weight: 500;
+}
+
+.form-group input {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+}
+
+.form-group small {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+/* Button */
+.register-btn {
+  width: 100%;
+  background: #6366f1;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  transition: background 0.2s;
+}
+
+.register-btn:hover {
+  background: #4f46e5;
+}
+
+/* Login Link */
+.login-link {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.login-link span {
+  color: #6b7280;
+}
+
+.login-link a {
+  color: #6366f1;
+  font-weight: 500;
+  text-decoration: underline;
+}

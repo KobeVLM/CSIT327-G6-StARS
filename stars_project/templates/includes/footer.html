@@ -1,0 +1,20 @@
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>StARS</h3>
+      <p>Student Artist Sharing System - Where creativity meets community</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="footer-section">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="{% url 'users:profile' %}">Profile</a></li>
+        <li><a href="{% url 'users:settings' %}">Settings</a></li>
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; {% now "Y" %} StARS. All rights reserved.</p>
+  </div>
+</footer>

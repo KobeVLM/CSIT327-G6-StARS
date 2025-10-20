@@ -1,0 +1,104 @@
+{% extends 'base/base.html' %} {% load static %} {% block title %}Profile -
+StARS{% endblock %} {% block extra_css %}
+<style>
+  .profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #7c3aed;
+    margin-bottom: 1rem;
+  }
+
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .stat-card {
+    background: #1f2937;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #7c3aed;
+  }
+
+  .stat-label {
+    color: #9ca3af;
+    margin-top: 0.5rem;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="profile-container">
+  <div class="profile-header">
+    {% if profile.avatar %}
+    <img
+      src="{{ profile.avatar.url }}"
+      alt="Profile Avatar"
+      class="profile-avatar"
+    />
+    {% else %}
+    <div
+      class="profile-avatar"
+      style="
+        background: #374151;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        font-size: 3rem;
+      "
+    >
+      {{ user.username|first|upper }}
+    </div>
+    {% endif %}
+    <h1>{{ user.username }}</h1>
+    <p style="color: #9ca3af">{{ profile.bio|default:"No bio available." }}</p>
+  </div>
+
+  <div class="profile-stats">
+    <div class="stat-card">
+      <div class="stat-value">{{ profile.xp|default:0 }}</div>
+      <div class="stat-label">Experience Points</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ profile.level|default:1 }}</div>
+      <div class="stat-label">Level</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Artworks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Followers</div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 2rem">
+    <a href="{% url 'users:settings' %}" class="btn btn-primary"
+      >Edit Profile</a
+    >
+    <a href="{% url 'gallery:upload' %}" class="btn btn-secondary"
+      >Upload Artwork</a
+    >
+  </div>
+</div>
+{% endblock %}

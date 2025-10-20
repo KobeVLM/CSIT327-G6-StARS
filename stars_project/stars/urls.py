@@ -17,16 +17,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
+from django.conf import settings
+from django.conf.urls.static import static
 
 def home_redirect(request):
     """Redirect home page to landing page"""
     if request.user.is_authenticated:
-        return redirect('accounts:landing')
+        return redirect('users:landing')
     else:
-        return redirect('accounts:login')
+        return redirect('users:login')
 
 urlpatterns = [
     path('', home_redirect, name='home'),
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
+    path('users/', include('apps.users.urls')),
+    path('gallery/', include('apps.gallery.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,160 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Settings - StARS{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-header">
+        <h1>Settings</h1>
+        <p>Manage your account preferences and privacy settings</p>
+    </div>
+
+    <div class="settings-tabs">
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="profile">Profile</button>
+            <button class="tab-btn" data-tab="notifications">Notifications</button>
+            <button class="tab-btn" data-tab="privacy">Privacy</button>
+            <button class="tab-btn" data-tab="appearance">Appearance</button>
+        </div>
+
+        <!-- Profile Tab -->
+        <div class="tab-content active" id="profile">
+            <div class="settings-section">
+                <h2>Profile Information</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" value="{{ user.username }}" readonly>
+                        <small class="form-text">Username cannot be changed</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="{{ user.email }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bio">Bio</label>
+                        <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself...">{{ profile.bio }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="avatar">Profile Picture</label>
+                        <input type="file" id="avatar" name="avatar" accept="image/*">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="Current avatar" class="current-avatar">
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div class="tab-content" id="notifications">
+            <div class="settings-section">
+                <h2>Notification Preferences</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="email_notifications" {% if settings.email_notifications %}checked{% endif %}>
+                            <span class="checkmark"></span>
+                            Email notifications
+                        </label>
+                        <small class="form-text">Receive email notifications for likes, comments, and follows</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="push_notifications" {% if settings.push_notifications %}checked{% endif %}>
+                            <span class="checkmark"></span>
+                            Push notifications
+                        </label>
+                        <small class="form-text">Receive browser push notifications</small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Privacy Tab -->
+        <div class="tab-content" id="privacy">
+            <div class="settings-section">
+                <h2>Privacy Settings</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="profile_visibility">Profile Visibility</label>
+                        <select id="profile_visibility" name="profile_visibility">
+                            <option value="public" {% if settings.profile_visibility == 'public' %}selected{% endif %}>Public</option>
+                            <option value="friends" {% if settings.profile_visibility == 'friends' %}selected{% endif %}>Friends Only</option>
+                            <option value="private" {% if settings.profile_visibility == 'private' %}selected{% endif %}>Private</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="show_email" {% if settings.show_email %}checked{% endif %}>
+                            <span class="checkmark"></span>
+                            Show email on profile
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Appearance Tab -->
+        <div class="tab-content" id="appearance">
+            <div class="settings-section">
+                <h2>Appearance</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="theme">Theme</label>
+                        <select id="theme" name="theme">
+                            <option value="dark" {% if settings.theme == 'dark' %}selected{% endif %}>Dark</option>
+                            <option value="light" {% if settings.theme == 'light' %}selected{% endif %}>Light</option>
+                            <option value="auto" {% if settings.theme == 'auto' %}selected{% endif %}>Auto</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Tab switching functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            
+            // Remove active class from all tabs and contents
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            this.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+});
+</script>
+{% endblock %}
