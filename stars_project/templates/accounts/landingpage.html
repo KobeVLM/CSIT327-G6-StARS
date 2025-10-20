@@ -127,12 +127,12 @@
           >
             <span class="sidebar-icon">&#8682;</span> Upload Artwork
           </button>
-          <button
+          {% comment %} <button
             class="sidebar-btn"
             onclick="window.location.href='{% url 'accounts:blogs' %}'"
           >
             <span class="sidebar-icon">&#128221;</span> Write Blog
-          </button>
+          </button> {% endcomment %}
           <button class="sidebar-btn">
             <span class="sidebar-icon">&#128100;</span> Profile
           </button>
@@ -144,10 +144,10 @@
               <span>Artwork Created</span>
               <span class="stat-value">{{ artwork_created|default:0 }}</span>
             </div>
-            <div class="stat-row">
+            {% comment %} <div class="stat-row">
               <span>Blogs Written</span>
               <span class="stat-value">{{ blogs_written|default:0 }}</span>
-            </div>
+            </div> {% endcomment %}
             <div class="stat-row">
               <span>Total XP</span>
               <span class="stat-value">{{ xp|default:0 }}</span>
@@ -200,7 +200,7 @@
                 >Get Started</a
               >
             </div>
-            <div
+            {% comment %} <div
               style="
                 background: #f0f4ff;
                 padding: 1.5rem;
@@ -211,8 +211,8 @@
               <h3 style="color: #6366f1; margin-bottom: 0.5rem">Write Blog</h3>
               <p style="margin-bottom: 1rem; color: #6b7280">
                 Share your creative journey
-              </p>
-              <a
+              </p> {% endcomment %}
+              {% comment %} <a
                 href="{% url 'accounts:blogs' %}"
                 style="
                   background: #6366f1;
@@ -222,7 +222,7 @@
                   text-decoration: none;
                 "
                 >Start Writing</a
-              >
+              > {% endcomment %}
             </div>
           </div>
         </div>

@@ -1,61 +1,96 @@
 from django.db import models
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
 
 # Create your models here.
 
-#For blog posts; Blogs are associated with a user
-class Blog(models.Model):
-    blogId = models.AutoField(primary_key=True, unique=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="blogs")
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+class Category(models.Model):
+    category_name = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.title
+        return self.category_name
 
-#For artworks; Artworks are associated with a user
-class Artwork(models.Model):
-    artId = models.AutoField(primary_key=True, unique=True)
-    artist = models.ForeignKey(User, on_delete=models.CASCADE, related_name="artworks")
-    title = models.CharField(max_length=50)
-    description = models.TextField()
-    likes = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.title
-
-#For comments; Comments are associated with a user, blog post (can be empty), and artwork (can be empty)
-class Comment(models.Model):
-    commentId = models.AutoField(primary_key=True, unique=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
-    content = models.TextField()
-    likes = models.PositiveIntegerField(default=0)
-    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, null=True, blank=True, related_name="comments")
-    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE, null=True, blank=True, related_name="comments")
-
-    def __str__(self):
-        return f"Comment by {self.author.username}"
-
-#For tags; Tags are associated with blogs or artwork/s
 class Tag(models.Model):
-    tagId = models.AutoField(primary_key=True, unique=True)
-    name = models.CharField(max_length=30, unique=True)
-    blogs = models.ManyToManyField(Blog, blank=True, related_name="tags")
-    artworks = models.ManyToManyField(Artwork, blank=True, related_name="tags")
+    tag_id = models.AutoField(primary_key=True, unique=True)
+    tag_name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
-        return self.name
+        return self.tag_name
 
-#For favorites or bookmarks; Favorites are associated with a blog or artwork/s
-class Favorite(models.Model):
-    favoriteId = models.AutoField(primary_key=True, unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favorites")
-    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, null=True, blank=True, related_name="favorites")
-    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE, null=True, blank=True, related_name="favorites")
-    created_at = models.DateTimeField(auto_now_add=True)
+
+class Post(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=200)
+    file_url = models.FileField(upload_to='uploads/')
+    file_type = models.CharField(max_length=20)
+    upload_date = models.DateTimeField(auto_now_add=True)
+    visibility = models.CharField(max_length=20, choices=[
+        ('public', 'Public'),
+        ('private', 'Private')
+    ])
+
+    tags = models.ManyToManyField(Tag, through='PostTag')
 
     def __str__(self):
-        return f"Favorite by {self.user.username}"
+        return self.title
+
+class PostTag(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    date_liked = models.DateTimeField(auto_now_add=True)
+
+
+class Share(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    platform = models.CharField(max_length=50)
+    share_date = models.DateTimeField(auto_now_add=True)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(blank=True)
+    profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+class Badge(models.Model):
+    badge_name = models.CharField(max_length=100)
+    description = models.TextField()
+    level_required = models.IntegerField()
+
+class UserBadge(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    badge = models.ForeignKey(Badge, on_delete=models.CASCADE)
+    date_earned = models.DateTimeField(auto_now_add=True)
+
+
+class Reward(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    points = models.IntegerField(default=0)
+    exp = models.IntegerField(default=0)
+    reason = models.CharField(max_length=255)
+    date_awarded = models.DateTimeField(auto_now_add=True)
+
+
+class Settings(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    notifications_enabled = models.BooleanField(default=True)
+    level_required = models.IntegerField(default=1)
+
+
+class Moderation(models.Model):
+    admin = models.ForeignKey(User, related_name='moderator', on_delete=models.CASCADE)
+    target_post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    target_user = models.ForeignKey(User, related_name='reported_user', on_delete=models.CASCADE)
+    action_taken = models.CharField(max_length=100)
+    reason = models.TextField()
+    date_actioned = models.DateTimeField(auto_now_add=True)

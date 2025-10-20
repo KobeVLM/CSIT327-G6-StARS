@@ -1,15 +1,15 @@
 from django import forms
-from .models import Blog, Artwork, Comment
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
+from .models import Post
 
 class RegisterForm(UserCreationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter username'}))
-    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'Enter email'}))
-    first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter first name'}), required=False)
-    last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter last name'}), required=False)
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter password'}))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Confirm password'}))
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'johndoe123'}))
+    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'johndoe@gmail.com'}))
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'John'}), required=False)
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Doe'}), required=False)
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'placeholder': '********'}))
+    password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput(attrs={'placeholder': '********'}))
 
     class Meta:
         model = User
@@ -21,34 +21,13 @@ class RegisterForm(UserCreationForm):
             raise forms.ValidationError("Email already exists.")
         return email
 
-class LoginForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Enter username'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Enter password'}))
 
-class BlogForm(forms.ModelForm):
-    class Meta:
-        model = Blog
-        fields = ['title', 'description', 'content']
-        widgets = {
-            'title': forms.TextInput(attrs={'placeholder': 'Blog title'}),
-            'description': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Short description'}),
-            'content': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Enter content'})
-        }
-    
-#To implement images daw kay need ug ImageField and then i-modify ang settings.py to include media
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Username'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
+
+
 class ArtworkForm(forms.ModelForm):
     class Meta:
-        model = Artwork
-        fields = ['title', 'description']
-        widgets = {
-            'title': forms.TextInput(attrs={'placeholder': 'Artwork title'}),
-            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Short description'}),
-        }
-
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['content']
-        widgets = {
-            'content': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Write a comment...'})
-        }
+        model = Post
+        fields = ['title', 'file_url', 'file_type', 'visibility', 'category']
