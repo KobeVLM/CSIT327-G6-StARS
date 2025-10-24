@@ -2,7 +2,16 @@
 
 ## Project Overview
 
-StARS is a Django 5.2.6 student project in early development stage. This is a fresh Django installation with minimal customization but follows established development workflows and conventions.
+**StARS (Student Art Sharing System)** is a Django 5.2.6 web-only platform for students to share, discover, and interact with digital artwork. The system focuses on community building, user profiles, artwork galleries, and social features for student artists.
+
+### Core Features
+
+- **User Management**: Registration, authentication, profiles with avatars and bios
+- **Artwork Sharing**: Upload, display, and categorize student artwork
+- **Social Features**: Comments, likes, follows, and community interaction
+- **Gamification**: User levels, XP system, badges, and achievements
+- **Content Management**: Blogs, character galleries, and art collections
+- **Responsive Design**: Mobile-friendly interface for art viewing and sharing
 
 ## Project Structure
 
@@ -18,14 +27,26 @@ StARS is a Django 5.2.6 student project in early development stage. This is a fr
 ```
 CSIT327-G6-StARS/
 ├── README.md                # Project documentation
+├── requirements.txt         # Python dependencies
 ├── .github/
 │   └── copilot-instructions.md
 └── stars_project/
     ├── manage.py            # Django management script
     ├── venv/               # Virtual environment (local only)
-    └── stars/              # Main project configuration
+    ├── media/              # User-uploaded files (avatars, artwork)
+    ├── static/             # CSS, JS, images
+    │   └── css/            # Stylesheets for different pages
+    ├── templates/          # HTML templates
+    │   ├── base/           # Base templates and navigation
+    │   └── accounts/       # User-related templates
+    ├── accounts/           # Main application (users, profiles, content)
+    │   ├── models.py       # User profiles, artwork, blogs, comments
+    │   ├── views.py        # Authentication, profiles, content management
+    │   ├── forms.py        # User input forms
+    │   └── urls.py         # App URL routing
+    └── stars/              # Django project configuration
         ├── settings.py     # Project settings
-        ├── urls.py         # URL routing
+        ├── urls.py         # Main URL routing
         ├── wsgi.py         # WSGI application
         └── asgi.py         # ASGI application
 ```
@@ -33,9 +54,11 @@ CSIT327-G6-StARS/
 ### Development Environment Setup
 
 - **Virtual environment**: Located at `stars_project/venv/`
-- **Activation**: Use `venv\Scripts\activate` on Windows
-- **Dependencies**: Install with `pip install django` (minimal setup)
+- **Activation**: Use `venv\Scripts\Activate.ps1` on Windows
+- **Dependencies**: Install with `pip install -r requirements.txt`
+- **Required packages**: Django, Pillow (for image handling), psycopg2-binary, python-dotenv
 - **Database setup**: Run `python manage.py migrate` before first use
+- **Media files**: Ensure `media/` directory exists for user uploads
 
 ## Development Workflow
 
@@ -44,8 +67,8 @@ CSIT327-G6-StARS/
 ```bash
 # Environment setup
 python -m venv venv
-venv\Scripts\activate
-pip install django
+venv\Scripts\Activate.ps1
+pip install -r ..\requirements.txt
 
 # Django operations
 python manage.py runserver      # Start development server
@@ -86,27 +109,28 @@ python manage.py startapp <name> # Create new Django app
 - **Secret key**: Uses Django's insecure default (needs updating for production)
 - **Database**: SQLite with default configuration
 - **Static files**: Standard Django setup with `STATIC_URL = 'static/'`
-- **Templates**: Standard Django template configuration (no custom directories yet)
+- **Media files**: Configured for user uploads at `MEDIA_URL = '/media/'`
+- **Templates**: Located in `templates/` directory with app-specific subdirectories
 
 ### URL Patterns
 
 - Main URL configuration in `stars/urls.py`
-- Currently only includes Django admin at `/admin/`
-- No custom apps or views defined yet
+- App URLs in `accounts/urls.py` for authentication and profile features
+- Current routes: login, register, profile, settings, artwork upload, blogs
 
 ## Current State & Next Steps
 
-This is a minimal Django project with established workflows:
+This is an active Django project with core art sharing functionality:
 
-- ✅ Basic Django configuration
-- ✅ Admin interface setup
-- ✅ Development workflow documented
-- ✅ Git conventions established
-- ✅ Virtual environment setup
-- ❌ No custom apps created
-- ❌ No models defined
-- ❌ No custom views or templates
-- ❌ No requirements.txt file
+- ✅ User authentication system (login, register, logout)
+- ✅ User profiles with avatars, bios, and XP/level system
+- ✅ Settings page with profile, notifications, privacy, and appearance tabs
+- ✅ Basic artwork and blog models
+- ✅ Character/OC management system
+- ✅ Badge and achievement system
+- ✅ File upload handling for images
+- ✅ Responsive CSS styling
+- ✅ Requirements.txt with all dependencies
 
 When adding new features:
 
