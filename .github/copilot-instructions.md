@@ -17,12 +17,13 @@
 
 - **Root directory**: `c:\Users\Kobe\Desktop\CSIT327-G6-StARS\`
 - **Django project**: `stars_project/` (contains `manage.py`)
-- **Main app**: `stars/` (Django project configuration)
+- **Project package**: `stars/` (Django project configuration)
+- **Apps grouping**: `apps/` (contains `users`, `gallery`, `gamification`, `moderation`)
 - **Working directory**: Always operate from `stars_project/` when running Django commands
 
 ## Key Architecture Patterns
 
-### Django Project Layout
+### Django Project Layout (updated for FIGMA conversion)
 
 ```
 CSIT327-G6-StARS/
@@ -30,25 +31,32 @@ CSIT327-G6-StARS/
 ├── requirements.txt         # Python dependencies
 ├── .github/
 │   └── copilot-instructions.md
-└── stars_project/
-    ├── manage.py            # Django management script
-    ├── venv/               # Virtual environment (local only)
-    ├── media/              # User-uploaded files (avatars, artwork)
-    ├── static/             # CSS, JS, images
-    │   └── css/            # Stylesheets for different pages
-    ├── templates/          # HTML templates
-    │   ├── base/           # Base templates and navigation
-    │   └── accounts/       # User-related templates
-    ├── accounts/           # Main application (users, profiles, content)
-    │   ├── models.py       # User profiles, artwork, blogs, comments
-    │   ├── views.py        # Authentication, profiles, content management
-    │   ├── forms.py        # User input forms
-    │   └── urls.py         # App URL routing
-    └── stars/              # Django project configuration
-        ├── settings.py     # Project settings
-        ├── urls.py         # Main URL routing
-        ├── wsgi.py         # WSGI application
-        └── asgi.py         # ASGI application
+└── stars_project/           # Django project root
+  ├── manage.py            # Django management script
+  ├── venv/                # Virtual environment (local only)
+  ├── media/               # User-uploaded files (avatars, artwork)
+  ├── static/              # CSS, JS, images
+  │   ├── css/             # Global stylesheets (variables, base, pages)
+  │   └── js/              # Small JS utilities (dark mode, dropdowns)
+  ├── templates/          # Global templates
+  │   ├── base.html        # Base layout
+  │   ├── partials/       # Reusable partials from Figma
+  │   │   ├── auth_header.html
+  │   │   ├── app_header.html
+  │   │   └── sidebar.html
+  │   └── auth/           # Auth pages converted from Figma
+  │       ├── login.html
+  │       └── register.html
+  ├── apps/               # Grouped Django apps (recommended)
+  │   ├── users/          # Authentication & user profiles
+  │   ├── gallery/        # Posts and gallery features
+  │   ├── gamification/   # Badges, XP, rewards
+  │   └── moderation/     # Admin/moderation tools
+  └── stars/              # Django project configuration package
+    ├── settings.py     # Project settings (keep DB settings unchanged)
+    ├── urls.py         # Main URL routing
+    ├── wsgi.py         # WSGI application
+    └── asgi.py         # ASGI application
 ```
 
 ### Development Environment Setup
@@ -56,8 +64,8 @@ CSIT327-G6-StARS/
 - **Virtual environment**: Located at `stars_project/venv/`
 - **Activation**: Use `venv\Scripts\Activate.ps1` on Windows
 - **Dependencies**: Install with `pip install -r requirements.txt`
-- **Required packages**: Django, Pillow (for image handling), psycopg2-binary, python-dotenv
-- **Database setup**: Run `python manage.py migrate` before first use
+- **Required packages**: Django, Pillow (for image handling), mysqlclient (or your DB driver), python-dotenv
+- **Database setup**: Run `python manage.py migrate` before first use (do NOT modify existing DB settings)
 - **Media files**: Ensure `media/` directory exists for user uploads
 
 ## Development Workflow
@@ -104,19 +112,82 @@ python manage.py startapp <name> # Create new Django app
 
 ## Important Conventions
 
-### Settings Configuration
+### Settings & Database
 
-- **Secret key**: Uses Django's insecure default (needs updating for production)
-- **Database**: SQLite with default configuration
-- **Static files**: Standard Django setup with `STATIC_URL = 'static/'`
+- **Secret key**: Uses Django's insecure default in development (update for production)
+- **Database**: Keep your existing MySQL database configuration in `stars/settings.py` — do NOT change database settings as requested.
+- **Static files**: Use `STATIC_URL = '/static/'` and place Figma-converted CSS in `static/css/` (see mapping below)
 - **Media files**: Configured for user uploads at `MEDIA_URL = '/media/'`
-- **Templates**: Located in `templates/` directory with app-specific subdirectories
+- **Templates**: Use `templates/` for global templates and `apps/<app>/templates/<app>/` for app-specific templates
 
 ### URL Patterns
 
 - Main URL configuration in `stars/urls.py`
-- App URLs in `accounts/urls.py` for authentication and profile features
-- Current routes: login, register, profile, settings, artwork upload, blogs
+- App URLs live in `apps/<app>/urls.py` and should use namespacing (e.g., `users:login`, `gallery:dashboard`)
+- Pages converted from Figma: `login`, `register`, `dashboard`, `profile`, `settings` (mapped below)
+
+### Figma → Django Conversion Mapping (from `FIGMA_TO_DJANGO_CONVERSION/FILE_MAP.txt`)
+
+Copy these files as-is into the project (paths are the recommended destinations):
+
+- `/styles/globals.css` → `static/css/globals.css`
+- `/components/Header.tsx` → `templates/partials/auth_header.html`
+- `/components/AppHeader.tsx` → `templates/partials/app_header.html`
+- `/components/pages/Login.tsx` → `templates/auth/login.html`
+- `/components/pages/Register.tsx` → `templates/auth/register.html`
+- `/components/pages/Dashboard.tsx` → `templates/dashboard.html`
+- `/components/pages/Profile.tsx` → `templates/profile.html`
+- `/components/pages/Settings.tsx` → `templates/settings.html`
+
+Use modified versions (conflicts resolved) and convert them to Django templates:
+
+- `/DJANGO_CONVERSION/Sidebar-simplified.tsx` → `templates/partials/sidebar.html` (convert JSX to template include)
+- `/DJANGO_CONVERSION/App-simplified.tsx` → `templates/base.html` and optionally `templates/layouts/app_layout.html`
+
+Skip these features for now (as per mapping): AdminLogin, Browse, Upload, Moderation, Badges, and `ui/*` components.
+
+### JavaScript Interactivity
+
+Convert `javascript-extractions.js` into `static/js/app.js` and include features:
+
+- Dark mode toggle
+- Profile dropdown menu
+- Inline profile editing (progressive enhancement)
+- Dashboard search
+- Logout confirmation
+
+### Icons and dependencies
+
+You can keep using the Lucide icons via CDN (or include SVG icons in `static/images/icons/`). Tailwind classes used in the React prototype should be translated into the CSS variables and rules in `static/css/globals.css` and `static/css/base.css`.
+
+### ERD / Models (high level)
+
+The FIGMA conversion guide assumes and expects the following model boundaries (align these with your existing models or update carefully):
+
+- `apps.users`:
+
+  - User (Django's user or custom user)
+  - Profile (avatar, bio, location, xp, level)
+  - Settings (user preferences, dark_mode, notification preferences)
+
+- `apps.gallery`:
+
+  - Post (title, image, description, author, created_at, category)
+  - Category
+  - Tag
+  - Like / Reaction
+
+- `apps.gamification`:
+
+  - Badge
+  - Reward
+  - UserProgress (xp, achievements)
+
+- `apps.moderation`:
+  - Report
+  - ModerationLog
+
+When updating `copilot-instructions.md`, we include the above ERD summary to reflect the changed ERD used by the FIGMA conversion guide.
 
 ## Current State & Next Steps
 

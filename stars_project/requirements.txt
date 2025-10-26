@@ -1,0 +1,14 @@
+Django==5.2.7
+Pillow>=9.4.0
+PyMySQL>=1.0.3
+mysqlclient>=2.1.1
+python-dotenv>=1.0.0
+# Optional tooling
+# django-debug-toolbar>=4.0
+# gunicorn>=21.0.0  # for Linux production deployments
+
+
+# python manage.py makemigrations
+# python manage.py migrate
+# python manage.py createsuperuser
+# python manage.py runserver

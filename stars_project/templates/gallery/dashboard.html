@@ -1,0 +1,150 @@
+{% extends 'app_layout.html' %}
+{% load static %}
+
+{% block title %}Dashboard - STARS{% endblock %}
+
+{% block app_content %}
+<div class="p-8 max-w-6xl">
+    <!-- Header Section -->
+    <div class="mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h1 class="text-2xl font-semibold mb-2 text-gray-900">
+                    Welcome back, {{ user.get_full_name|default:user.username }}! 🎨
+                </h1>
+                <p class="text-sm text-gray-600">
+                    Here's what's happening with your artwork today
+                </p>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="relative">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                <input
+                    type="text"
+                    id="dashboardSearch"
+                    placeholder="Search..."
+                    class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 placeholder-gray-500"
+                />
+                <button
+                    id="clearSearch"
+                    class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900"
+                >
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Search Results -->
+            <div id="searchResults" class="hidden absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-20">
+                <div class="p-8 text-center">
+                    <p class="text-sm text-gray-500">No results found.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <div class="bg-primary/10 rounded-lg p-2">
+                    <i data-lucide="image" class="w-5 h-5 text-primary"></i>
+                </div>
+            </div>
+            <div class="text-2xl font-semibold mb-1 text-gray-900">{{ stats.artwork_created }}</div>
+            <div class="text-sm text-gray-600">Posts Created</div>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <div class="bg-yellow-500/10 rounded-lg p-2">
+                    <i data-lucide="award" class="w-5 h-5 text-yellow-500"></i>
+                </div>
+            </div>
+            <div class="text-2xl font-semibold mb-1 text-gray-900">{{ stats.level }}</div>
+            <div class="text-sm text-gray-600">Current Level</div>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <div class="bg-success/10 rounded-lg p-2">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-success"></i>
+                </div>
+            </div>
+            <div class="text-2xl font-semibold mb-1 text-gray-900">{{ stats.total_xp }}</div>
+            <div class="text-sm text-gray-600">Total XP</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div class="bg-primary/10 rounded-lg p-3 inline-block mb-3">
+                <i data-lucide="upload" class="w-6 h-6 text-primary"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2 text-gray-900">Upload New Post</h3>
+            <p class="text-sm text-gray-600 mb-4">
+                Share your latest artwork with the community
+            </p>
+            <button
+                onclick="alert('Upload feature coming soon!')"
+                class="bg-primary text-primary-foreground px-6 py-2.5 rounded hover:opacity-90 transition-opacity inline-flex items-center gap-2 text-sm font-medium"
+            >
+                <i data-lucide="upload" class="w-4 h-4"></i>
+                Upload Artwork
+            </button>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div class="bg-secondary rounded-lg p-3 inline-block mb-3">
+                <i data-lucide="edit" class="w-6 h-6 text-primary"></i>
+            </div>
+            <h3 class="text-lg font-semibold mb-2 text-gray-900">Edit Profile</h3>
+            <p class="text-sm text-gray-600 mb-4">
+                Update your information and preferences
+            </p>
+            <a
+                href="{% url 'users:profile' %}"
+                class="bg-secondary text-gray-900 px-6 py-2.5 rounded hover:bg-secondary/80 transition-colors text-sm font-medium inline-block"
+            >
+                Go to Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+        <h3 class="text-lg font-semibold mb-4 text-gray-900">Recent Activity</h3>
+        <div class="space-y-3">
+            <div class="flex items-start gap-3 pb-3 border-b border-gray-200">
+                <div class="w-2 h-2 rounded-full bg-primary mt-2"></div>
+                <div class="flex-1">
+                    <div class="text-sm text-gray-900">Welcome to STARS! Start by uploading your first artwork.</div>
+                    <div class="text-xs text-gray-500 mt-1">Just now</div>
+                </div>
+            </div>
+            
+            <div class="flex items-start gap-3 pb-3 border-b border-gray-200">
+                <div class="w-2 h-2 rounded-full bg-success mt-2"></div>
+                <div class="flex-1">
+                    <div class="text-sm text-gray-900">Your account was created successfully!</div>
+                    <div class="text-xs text-gray-500 mt-1">Today</div>
+                </div>
+            </div>
+            
+            <div class="flex items-start gap-3">
+                <div class="w-2 h-2 rounded-full bg-yellow-500 mt-2"></div>
+                <div class="flex-1">
+                    <div class="text-sm text-gray-900">Complete your profile to earn your first badge.</div>
+                    <div class="text-xs text-gray-500 mt-1">Today</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Overlay -->
+<div id="searchOverlay" class="hidden fixed inset-0 z-10"></div>
+{% endblock %}

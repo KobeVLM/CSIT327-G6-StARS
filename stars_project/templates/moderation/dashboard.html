@@ -1,0 +1,348 @@
+{% extends 'app_layout.html' %}
+{% load static %}
+
+{% block title %}Content Moderation - STARS{% endblock %}
+
+{% block app_content %}
+<div class="p-8 max-w-7xl">
+    <!-- Header Section -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold mb-2 text-gray-900 flex items-center gap-3">
+            <i data-lucide="shield" class="w-8 h-8 text-red-500"></i>
+            Content Moderation
+        </h1>
+        <p class="text-gray-600">Manage reported content and user violations</p>
+    </div>
+
+    <!-- Success Message -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="bg-green-50 border border-green-200 rounded-lg px-4 py-3 mb-6 flex items-center gap-2">
+                <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                <p class="text-sm text-green-800">{{ message }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="bg-red-100 rounded-lg p-2">
+                    <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-gray-900">{{ reports_count }}</div>
+                    <div class="text-sm text-gray-600">Pending Reports</div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="bg-yellow-100 rounded-lg p-2">
+                    <i data-lucide="user-x" class="w-6 h-6 text-yellow-600"></i>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-gray-900">{{ flagged_users_count }}</div>
+                    <div class="text-sm text-gray-600">Flagged Users</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reported Posts Section -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-900 flex items-center gap-2">
+            <i data-lucide="flag" class="w-6 h-6 text-red-500"></i>
+            Reported Posts
+        </h2>
+        
+        {% if pending_reports %}
+            <div class="space-y-4">
+                {% for report in pending_reports %}
+                    <div class="bg-white rounded-lg p-5 border border-red-200 shadow-sm">
+                        <div class="flex gap-4">
+                            {% if report.artwork.image %}
+                                <img 
+                                    src="{{ report.artwork.image.url }}" 
+                                    alt="{{ report.artwork.title }}"
+                                    class="w-32 h-24 object-cover rounded border border-gray-200"
+                                />
+                            {% else %}
+                                <div class="w-32 h-24 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                    <i data-lucide="image" class="w-8 h-8 text-gray-400"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="flex-1">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-1 text-gray-900">
+                                            {{ report.artwork.title }}
+                                        </h3>
+                                        <p class="text-sm text-gray-600">
+                                            by {{ report.artwork.artist.username }}
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-1 px-2 py-1 bg-red-100 rounded">
+                                        <i data-lucide="alert-triangle" class="w-4 h-4 text-red-600"></i>
+                                        <span class="text-xs text-red-700 font-medium">
+                                            Reported
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <p class="text-sm text-gray-900 mb-1">
+                                        <span class="font-medium">Reason:</span> {{ report.get_reason_display }}
+                                    </p>
+                                    {% if report.description %}
+                                        <p class="text-sm text-gray-700 mb-1">{{ report.description }}</p>
+                                    {% endif %}
+                                    <p class="text-xs text-gray-500">
+                                        Reported by {{ report.reported_by.username }} on {{ report.created_at|date:"M d, Y" }}
+                                    </p>
+                                </div>
+                                
+                                <div class="flex gap-3">
+                                    <button
+                                        onclick="deleteArtwork({{ report.artwork.id }}, '{{ report.artwork.title|escapejs }}')"
+                                        class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors inline-flex items-center gap-2 text-sm"
+                                    >
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        Delete Post
+                                    </button>
+                                    <button
+                                        onclick="dismissReport({{ report.id }})"
+                                        class="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 transition-colors text-sm"
+                                    >
+                                        Dismiss Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-white rounded-lg p-8 text-center border border-gray-200 shadow-sm">
+                <i data-lucide="check-circle" class="w-12 h-12 text-green-500 mx-auto mb-4"></i>
+                <h3 class="text-lg font-semibold mb-2 text-gray-900">No pending reports</h3>
+                <p class="text-gray-600">All reports have been reviewed. Great job!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Flagged Users Section -->
+    <div>
+        <h2 class="text-2xl font-semibold mb-4 text-gray-900 flex items-center gap-2">
+            <i data-lucide="users" class="w-6 h-6 text-yellow-500"></i>
+            Flagged Users
+        </h2>
+        
+        {% if flagged_users %}
+            <div class="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-900">
+                                Username
+                            </th>
+                            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-900">
+                                Email
+                            </th>
+                            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-900">
+                                Violations
+                            </th>
+                            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-900">
+                                Last Violation
+                            </th>
+                            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-900">
+                                Status
+                            </th>
+                            <th class="text-left px-4 py-3 text-sm font-semibold text-gray-900">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in flagged_users %}
+                            <tr class="border-t border-gray-200">
+                                <td class="px-4 py-3 text-sm text-gray-900">
+                                    {{ user.username }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">
+                                    {{ user.email }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
+                                        {% if user.violation_count >= 3 %}bg-red-100 text-red-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                        {{ user.violation_count }} violation{{ user.violation_count|pluralize }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">
+                                    {% if user.latest_violation %}
+                                        {{ user.latest_violation.created_at|date:"M d, Y" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {% if user.is_active %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium">
+                                            Active
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded bg-red-100 text-red-800 text-xs font-medium">
+                                            Suspended
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {% if user.is_active %}
+                                        <button
+                                            onclick="suspendUser({{ user.id }}, '{{ user.username|escapejs }}')"
+                                            class="text-red-600 hover:text-red-800 inline-flex items-center gap-1 text-sm"
+                                        >
+                                            <i data-lucide="ban" class="w-4 h-4"></i>
+                                            Suspend
+                                        </button>
+                                    {% else %}
+                                        <button
+                                            onclick="activateUser({{ user.id }}, '{{ user.username|escapejs }}')"
+                                            class="text-green-600 hover:text-green-800 inline-flex items-center gap-1 text-sm"
+                                        >
+                                            <i data-lucide="user-check" class="w-4 h-4"></i>
+                                            Activate
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="bg-white rounded-lg p-8 text-center border border-gray-200 shadow-sm">
+                <i data-lucide="user-check" class="w-12 h-12 text-green-500 mx-auto mb-4"></i>
+                <h3 class="text-lg font-semibold mb-2 text-gray-900">No flagged users</h3>
+                <p class="text-gray-600">All users are in good standing.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript for AJAX actions -->
+<script>
+function deleteArtwork(artworkId, title) {
+    if (confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+        fetch(`/moderation/delete-artwork/${artworkId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the artwork.');
+        });
+    }
+}
+
+function dismissReport(reportId) {
+    if (confirm('Are you sure you want to dismiss this report?')) {
+        fetch(`/moderation/dismiss-report/${reportId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while dismissing the report.');
+        });
+    }
+}
+
+function suspendUser(userId, username) {
+    if (confirm(`Are you sure you want to suspend user "${username}"?`)) {
+        fetch(`/moderation/suspend-user/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while suspending the user.');
+        });
+    }
+}
+
+function activateUser(userId, username) {
+    if (confirm(`Are you sure you want to reactivate user "${username}"?`)) {
+        fetch(`/moderation/activate-user/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while reactivating the user.');
+        });
+    }
+}
+
+// Add CSRF token to all AJAX requests
+document.addEventListener('DOMContentLoaded', function() {
+    // Add CSRF token as hidden input if not present
+    if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+        const form = document.createElement('form');
+        form.innerHTML = '{% csrf_token %}';
+        document.body.appendChild(form);
+    }
+    
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
+</script>
+{% endblock %}

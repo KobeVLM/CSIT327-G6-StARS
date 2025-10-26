@@ -1,0 +1,559 @@
+{% extends 'app_layout.html' %}
+
+{% block title %}{{ artwork.title }} by {{ artwork.artist.username }} - StARS{% endblock %}
+
+{% block app_content %}
+<div class="p-8 max-w-6xl mx-auto">
+    <!-- Back Button -->
+    <div class="mb-6">
+        <a href="{% url 'gallery:browse' %}" 
+           class="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+            Back to Browse
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Artwork Display -->
+        <div class="lg:col-span-2">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <!-- Image -->
+                <div class="relative bg-gray-100 dark:bg-gray-700">
+                    {% if artwork.image %}
+                    <img src="{{ artwork.image.url }}" alt="{{ artwork.title }}" 
+                         class="w-full h-auto max-h-[70vh] object-contain">
+                    {% else %}
+                    <div class="w-full h-96 flex items-center justify-center">
+                        <i data-lucide="image" class="w-16 h-16 text-gray-400"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Image Actions -->
+                    <div class="absolute top-4 right-4 flex space-x-2">
+                        <button onclick="toggleFullscreen()" 
+                                class="p-2 bg-black bg-opacity-50 text-white rounded-lg hover:bg-opacity-70 transition-all">
+                            <i data-lucide="expand" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="downloadImage()" 
+                                class="p-2 bg-black bg-opacity-50 text-white rounded-lg hover:bg-opacity-70 transition-all">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                        </button>
+                        {% if request.user.is_authenticated and request.user != artwork.artist %}
+                        <button onclick="openReportModal()" 
+                                class="p-2 bg-black bg-opacity-50 text-white rounded-lg hover:bg-red-600 hover:bg-opacity-90 transition-all" 
+                                title="Report this artwork">
+                            <i data-lucide="flag" class="w-4 h-4"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Artwork Actions -->
+                <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <!-- Like Button -->
+                            <button onclick="toggleLike({{ artwork.id }})" id="likeBtn"
+                                    class="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all {% if user_has_liked %}bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400{% else %}bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900{% endif %}">
+                                <i data-lucide="heart" class="w-4 h-4 {% if user_has_liked %}fill-current{% endif %}"></i>
+                                <span id="likeCount">{{ artwork.likes_count }}</span>
+                            </button>
+
+                            <!-- Share Button -->
+                            <button onclick="shareArtwork()" 
+                                    class="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
+                                <i data-lucide="share-2" class="w-4 h-4"></i>
+                                <span>Share</span>
+                            </button>
+
+                            <!-- Collect Button -->
+                            {% if request.user.is_authenticated %}
+                            <button class="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
+                                <i data-lucide="bookmark" class="w-4 h-4"></i>
+                                <span>Collect</span>
+                            </button>
+                            {% endif %}
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                            <span class="flex items-center">
+                                <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
+                                {{ artwork.views }}
+                            </span>
+                            <span class="flex items-center">
+                                <i data-lucide="share-2" class="w-4 h-4 mr-1"></i>
+                                {{ artwork.shares_count }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Artwork Info -->
+        <div class="space-y-6">
+            <!-- Basic Info -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ artwork.title }}</h1>
+                
+                <!-- Artist Info -->
+                <div class="flex items-center space-x-3 mb-4">
+                    {% if artwork.artist.userprofile.avatar %}
+                    <img src="{{ artwork.artist.userprofile.avatar.url }}" alt="{{ artwork.artist.username }}" 
+                         class="w-10 h-10 rounded-full object-cover">
+                    {% else %}
+                    <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                        <i data-lucide="user" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <p class="font-medium text-gray-900 dark:text-white">
+                            <a href="{% url 'users:profile_detail' artwork.artist.username %}" 
+                               class="hover:text-blue-600 dark:hover:text-blue-400">
+                                {{ artwork.artist.userprofile.display_name }}
+                            </a>
+                        </p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">@{{ artwork.artist.username }}</p>
+                    </div>
+                    {% if request.user != artwork.artist %}
+                    <button class="ml-auto px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                        Follow
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                {% if artwork.description %}
+                <div class="mb-4">
+                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</h3>
+                    <p class="text-gray-600 dark:text-gray-400">{{ artwork.description }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Tags -->
+                {% if artwork.tags.all %}
+                <div class="mb-4">
+                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tags</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for tag in artwork.tags.all %}
+                        <a href="{% url 'gallery:browse' %}?tags={{ tag.name }}" 
+                           class="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-700 text-sm text-gray-600 dark:text-gray-400 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            #{{ tag.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Category -->
+                {% if artwork.category %}
+                <div class="mb-4">
+                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</h3>
+                    <a href="{% url 'gallery:browse' %}?category={{ artwork.category.slug }}" 
+                       class="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-sm text-blue-600 dark:text-blue-400 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
+                        {{ artwork.category.name }}
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- Upload Date -->
+                <div class="text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <p>Uploaded {{ artwork.created_at|date:"F d, Y" }}</p>
+                    {% if artwork.width and artwork.height %}
+                    <p>{{ artwork.width }} × {{ artwork.height }} pixels</p>
+                    {% endif %}
+                    {% if artwork.file_size %}
+                    <p>{{ artwork.file_size|filesizeformat }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Artist's Other Works -->
+            {% if related_artworks %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    More by {{ artwork.artist.username }}
+                </h3>
+                <div class="grid grid-cols-2 gap-3">
+                    {% for related in related_artworks %}
+                    <a href="{% url 'gallery:artwork_detail' related.pk %}" 
+                       class="block aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden hover:opacity-75 transition-opacity">
+                        {% if related.thumbnail %}
+                        <img src="{{ related.thumbnail.url }}" alt="{{ related.title }}" 
+                             class="w-full h-full object-cover">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center">
+                            <i data-lucide="image" class="w-8 h-8 text-gray-400"></i>
+                        </div>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'users:profile_detail' artwork.artist.username %}" 
+                   class="block mt-4 text-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm">
+                    View all artworks by {{ artwork.artist.username }}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="mt-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Comments</h3>
+        
+        {% if request.user.is_authenticated %}
+        <!-- Comment Form -->
+        <form method="post" class="mb-8">
+            {% csrf_token %}
+            <div class="flex space-x-3">
+                {% if request.user.userprofile.avatar %}
+                <img src="{{ request.user.userprofile.avatar.url }}" alt="{{ request.user.username }}" 
+                     class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                {% else %}
+                <div class="w-8 h-8 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
+                </div>
+                {% endif %}
+                <div class="flex-1">
+                    <textarea name="comment" placeholder="Add a comment..." 
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
+                              rows="3"></textarea>
+                    <div class="mt-2 flex justify-end">
+                        <button type="submit" 
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                            Post Comment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        {% else %}
+        <div class="mb-8 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p class="text-gray-600 dark:text-gray-400">
+                <a href="{% url 'users:login' %}" class="text-blue-600 dark:text-blue-400 hover:underline">Sign in</a> 
+                to leave a comment
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Comments List -->
+        <div class="space-y-6">
+            <!-- Placeholder for comments - you can implement this later -->
+            <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                <i data-lucide="message-circle" class="w-12 h-12 mx-auto mb-2"></i>
+                <p>No comments yet. Be the first to share your thoughts!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div id="reportModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full mx-4">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Report Artwork</h3>
+                <button onclick="closeReportModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <!-- Step 1: Violation Type Selection -->
+            <div id="violationTypeStep" class="report-step">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    What type of violation is this?
+                </p>
+                
+                <div class="space-y-3">
+                    <button onclick="selectViolationType('inappropriate')" 
+                            class="w-full text-left p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <div class="font-medium text-gray-900 dark:text-white">Inappropriate Content</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Sexual, violent, or disturbing content</div>
+                    </button>
+                    
+                    <button onclick="selectViolationType('spam')" 
+                            class="w-full text-left p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <div class="font-medium text-gray-900 dark:text-white">Spam</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Repetitive or promotional content</div>
+                    </button>
+                    
+                    <button onclick="selectViolationType('copyright')" 
+                            class="w-full text-left p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <div class="font-medium text-gray-900 dark:text-white">Copyright Violation</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Unauthorized use of copyrighted material</div>
+                    </button>
+                    
+                    <button onclick="selectViolationType('harassment')" 
+                            class="w-full text-left p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <div class="font-medium text-gray-900 dark:text-white">Harassment</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Targeting or bullying individuals</div>
+                    </button>
+                    
+                    <button onclick="selectViolationType('violence')" 
+                            class="w-full text-left p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <div class="font-medium text-gray-900 dark:text-white">Violence</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Graphic violence or threats</div>
+                    </button>
+                    
+                    <button onclick="selectViolationType('other')" 
+                            class="w-full text-left p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <div class="font-medium text-gray-900 dark:text-white">Other</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">Another type of violation</div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Reason Details -->
+            <div id="reasonStep" class="report-step hidden">
+                <button onclick="goBackToViolationType()" class="flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-4">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i>
+                    Back to violation types
+                </button>
+                
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Selected: <span id="selectedViolationType" class="font-medium text-gray-900 dark:text-white"></span>
+                </p>
+                
+                <form id="reportForm" onsubmit="submitReport(event)">
+                    {% csrf_token %}
+                    <input type="hidden" name="artwork_id" value="{{ artwork.id }}">
+                    <input type="hidden" id="violationTypeInput" name="reason" value="">
+                    
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Please provide additional details (max 500 characters):
+                        </label>
+                        <textarea name="description" id="reasonTextarea" rows="4" maxlength="500" required
+                                  placeholder="Please explain why you're reporting this content. This will help our moderation team understand the issue better."
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"></textarea>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <span id="charCount">0</span>/500 characters
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="closeReportModal()" 
+                                class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                            Submit Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Modal -->
+<div id="shareModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Share Artwork</h3>
+            <button onclick="closeShareModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        
+        <div class="space-y-3">
+            <button onclick="copyLink()" 
+                    class="w-full flex items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                <i data-lucide="link" class="w-5 h-5 mr-3"></i>
+                Copy Link
+            </button>
+            
+            <button onclick="shareToTwitter()" 
+                    class="w-full flex items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                <i data-lucide="twitter" class="w-5 h-5 mr-3"></i>
+                Share on Twitter
+            </button>
+            
+            <button onclick="shareToFacebook()" 
+                    class="w-full flex items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                <i data-lucide="facebook" class="w-5 h-5 mr-3"></i>
+                Share on Facebook
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Like functionality
+async function toggleLike(artworkId) {
+    try {
+        const response = await fetch(`/gallery/artwork/${artworkId}/like/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            const likeBtn = document.getElementById('likeBtn');
+            const likeCount = document.getElementById('likeCount');
+            const heartIcon = likeBtn.querySelector('[data-lucide="heart"]');
+            
+            likeCount.textContent = data.likes_count;
+            
+            if (data.liked) {
+                likeBtn.classList.add('bg-red-100', 'dark:bg-red-900', 'text-red-600', 'dark:text-red-400');
+                likeBtn.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-400');
+                heartIcon.classList.add('fill-current');
+            } else {
+                likeBtn.classList.remove('bg-red-100', 'dark:bg-red-900', 'text-red-600', 'dark:text-red-400');
+                likeBtn.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-400');
+                heartIcon.classList.remove('fill-current');
+            }
+        }
+    } catch (error) {
+        console.error('Error toggling like:', error);
+    }
+}
+
+// Share functionality
+function shareArtwork() {
+    document.getElementById('shareModal').classList.remove('hidden');
+    document.getElementById('shareModal').classList.add('flex');
+}
+
+function closeShareModal() {
+    document.getElementById('shareModal').classList.add('hidden');
+    document.getElementById('shareModal').classList.remove('flex');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href);
+    alert('Link copied to clipboard!');
+    closeShareModal();
+}
+
+function shareToTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(`Check out this amazing artwork: {{ artwork.title }} by {{ artwork.artist.username }}`);
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+    closeShareModal();
+}
+
+function shareToFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+    closeShareModal();
+}
+
+// Fullscreen functionality
+function toggleFullscreen() {
+    const img = document.querySelector('.lg\\:col-span-2 img');
+    if (img.requestFullscreen) {
+        img.requestFullscreen();
+    }
+}
+
+// Download functionality
+function downloadImage() {
+    const img = document.querySelector('.lg\\:col-span-2 img');
+    const link = document.createElement('a');
+    link.href = img.src;
+    link.download = '{{ artwork.title|slugify }}.jpg';
+    link.click();
+}
+
+// Report functionality
+function openReportModal() {
+    document.getElementById('reportModal').classList.remove('hidden');
+    document.getElementById('reportModal').classList.add('flex');
+    // Reset to step 1
+    showViolationTypeStep();
+}
+
+function closeReportModal() {
+    document.getElementById('reportModal').classList.add('hidden');
+    document.getElementById('reportModal').classList.remove('flex');
+    // Reset form and steps
+    document.getElementById('reportForm').reset();
+    document.getElementById('reasonTextarea').value = '';
+    document.getElementById('charCount').textContent = '0';
+    showViolationTypeStep();
+}
+
+function showViolationTypeStep() {
+    document.getElementById('violationTypeStep').classList.remove('hidden');
+    document.getElementById('reasonStep').classList.add('hidden');
+}
+
+function showReasonStep() {
+    document.getElementById('violationTypeStep').classList.add('hidden');
+    document.getElementById('reasonStep').classList.remove('hidden');
+}
+
+function selectViolationType(type) {
+    const typeNames = {
+        'inappropriate': 'Inappropriate Content',
+        'spam': 'Spam',
+        'copyright': 'Copyright Violation',
+        'harassment': 'Harassment',
+        'violence': 'Violence',
+        'other': 'Other'
+    };
+    
+    document.getElementById('violationTypeInput').value = type;
+    document.getElementById('selectedViolationType').textContent = typeNames[type];
+    showReasonStep();
+}
+
+function goBackToViolationType() {
+    showViolationTypeStep();
+}
+
+function submitReport(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    fetch('{% url "moderation:submit_report" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeReportModal();
+            alert('Thank you for your report. Our moderation team will review it shortly.');
+        } else {
+            alert(data.message || 'There was an error submitting your report. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was an error submitting your report. Please try again.');
+    });
+}
+
+// Initialize Lucide icons
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counter for the reason textarea
+    const textarea = document.getElementById('reasonTextarea');
+    const charCount = document.getElementById('charCount');
+    
+    if (textarea && charCount) {
+        textarea.addEventListener('input', function() {
+            charCount.textContent = this.value.length;
+        });
+    }
+    
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
+</script>
+{% endblock %}

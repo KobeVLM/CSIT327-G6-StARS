@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register - STARS{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-background flex items-center justify-center px-4">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Logo and Header -->
+        <div class="text-center">
+            <div class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="palette" class="w-8 h-8 text-primary-foreground"></i>
+            </div>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-2">Student Artist Space</h2>
+            <p class="text-sm text-gray-500">Student Artist Space</p>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-lg border border-gray-200">
+            <!-- Welcome Message -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-semibold text-center mb-2 text-gray-900">Create Account</h2>
+                <p class="text-sm text-gray-500 text-center">
+                    Join our community of student artists
+                </p>
+            </div>
+
+            <!-- Error Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="p-3 mb-4 bg-destructive/10 border border-destructive/20 rounded flex items-start gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 text-destructive mt-0.5 flex-shrink-0"></i>
+                        <span class="text-sm text-destructive">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Register Form -->
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="full_name" class="block text-sm font-medium text-gray-900 mb-2">
+                        Full Name
+                    </label>
+                    <input
+                        type="text"
+                        id="full_name"
+                        name="full_name"
+                        class="w-full px-3 py-2 border border-gray-300 rounded bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Enter your full name"
+                    />
+                </div>
+
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-900 mb-2">
+                        Username
+                    </label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Choose a username"
+                    />
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-900 mb-2">
+                        Email Address
+                    </label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Enter your @gmail.com email"
+                    />
+                    <p class="text-xs text-gray-500 mt-1">We currently only support Gmail addresses</p>
+                </div>
+
+                <div>
+                    <label for="password1" class="block text-sm font-medium text-gray-900 mb-2">
+                        Password
+                    </label>
+                    <input
+                        type="password"
+                        id="password1"
+                        name="password1"
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Create a password"
+                    />
+                </div>
+
+                <div>
+                    <label for="password2" class="block text-sm font-medium text-gray-900 mb-2">
+                        Confirm Password
+                    </label>
+                    <input
+                        type="password"
+                        id="password2"
+                        name="password2"
+                        required
+                        class="w-full px-3 py-2 border border-gray-300 rounded bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Confirm your password"
+                    />
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-primary text-primary-foreground px-6 py-2.5 rounded font-medium hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                >
+                    Create Account
+                </button>
+            </form>
+
+            <!-- Login Link -->
+            <div class="text-center text-sm text-gray-600 mt-4">
+                <p>
+                    Already have an account? 
+                    <a href="{% url 'users:login' %}" class="text-primary hover:underline">
+                        Sign in here
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

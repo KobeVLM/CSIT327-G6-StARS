@@ -1,0 +1,308 @@
+/* STARS - Global Styles for Django */
+
+:root {
+    --font-size: 16px;
+    --background: #F5F7FB;
+    --foreground: #000000;
+    --card: #ffffff;
+    --card-foreground: #000000;
+    --popover: #ffffff;
+    --popover-foreground: #000000;
+    --primary: #5865F2;
+    --primary-foreground: #ffffff;
+    --secondary: #E8EAF6;
+    --secondary-foreground: #000000;
+    --muted: #F5F7FB;
+    --muted-foreground: #6B7280;
+    --accent: #E8EAF6;
+    --accent-foreground: #000000;
+    --destructive: #EF4444;
+    --destructive-foreground: #ffffff;
+    --border: #E0E4EB;
+    --input: #E0E4EB;
+    --input-background: #ffffff;
+    --success: #10B981;
+    --success-foreground: #ffffff;
+    --font-weight-medium: 500;
+    --font-weight-normal: 400;
+    --ring: #5865F2;
+    --radius: 0.5rem;
+
+    /* Additional spacing and sizing variables */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    --radius-sm: calc(var(--radius) - 2px);
+    --radius-md: var(--radius);
+    --radius-lg: calc(var(--radius) + 2px);
+    --radius-xl: calc(var(--radius) + 4px);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode variables removed to ensure light theme only */
+
+/* Tailwind-compatible CSS custom properties */
+/* Dark mode media query removed to force light theme */
+
+/* CSS Reset and Base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: var(--font-size);
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+}
+
+/* Reset margins for common elements */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li,
+blockquote,
+figure {
+    margin: 0;
+    padding: 0;
+}
+
+/* Typography - Only apply margins within content areas */
+.content h1,
+[class*="p-"] h1 {
+    font-size: 1.875rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-md);
+}
+
+.content h2,
+[class*="p-"] h2 {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-md);
+}
+
+.content h3,
+[class*="p-"] h3 {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-sm);
+}
+
+.content h4,
+[class*="p-"] h4 {
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-sm);
+}
+
+.content p,
+[class*="p-"] p {
+    font-size: 1rem;
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-md);
+}
+
+.content label,
+[class*="p-"] label {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+    color: var(--foreground);
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+/* Common utility classes for compatibility */
+.bg-primary {
+    background-color: var(--primary) !important;
+}
+
+.bg-background {
+    background-color: var(--background) !important;
+}
+
+.bg-card {
+    background-color: var(--card) !important;
+}
+
+.bg-white {
+    background-color: #ffffff !important;
+}
+
+.bg-muted {
+    background-color: var(--muted) !important;
+}
+
+.bg-secondary {
+    background-color: var(--secondary) !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-foreground {
+    color: #000000 !important;
+}
+
+.text-black {
+    color: #000000 !important;
+}
+
+.text-muted-foreground {
+    color: #6B7280 !important;
+}
+
+.text-gray-900 {
+    color: #000000 !important;
+}
+
+.text-gray-800 {
+    color: #1F2937 !important;
+}
+
+.text-gray-700 {
+    color: #374151 !important;
+}
+
+.text-gray-600 {
+    color: #4B5563 !important;
+}
+
+.text-gray-500 {
+    color: #6B7280 !important;
+}
+
+.border-border {
+    border-color: var(--border) !important;
+}
+
+.border-gray-200 {
+    border-color: #E5E7EB !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-2 {
+    gap: var(--spacing-sm);
+}
+
+.gap-3 {
+    gap: 0.75rem;
+}
+
+.gap-4 {
+    gap: var(--spacing-md);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+.text-xl {
+    font-size: 1.25rem;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+.font-medium {
+    font-weight: var(--font-weight-medium);
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.rounded {
+    border-radius: var(--radius-md);
+}
+
+.rounded-lg {
+    border-radius: var(--radius-lg);
+}
+
+.rounded-xl {
+    border-radius: var(--radius-xl);
+}
+
+.shadow-sm {
+    box-shadow: var(--shadow-sm);
+}
+
+.shadow-md {
+    box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow-lg);
+}

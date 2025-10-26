@@ -1,0 +1,248 @@
+{% extends 'app_layout.html' %}
+{% load static %}
+
+{% block title %}Profile - STARS{% endblock %}
+
+{% block app_content %}
+<div class="p-8 max-w-7xl">
+    <!-- Success Message -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="bg-success/10 border border-success/20 rounded-lg px-4 py-3 mb-6">
+                <span class="text-success text-sm">{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Profile Header -->
+    <div class="bg-white rounded-lg p-6 mb-6 border border-gray-200 shadow-sm">
+        <div class="flex items-start justify-between mb-6">
+            <div class="flex items-start gap-4 flex-1">
+                <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    {% if profile.avatar %}
+                        <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="w-full h-full object-cover rounded-full" />
+                    {% else %}
+                        <span class="text-primary text-3xl font-semibold">
+                            {{ user.get_full_name|default:user.username|first|upper }}
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <div class="flex-1">
+                    <h1 class="text-2xl font-semibold mb-2 text-gray-900">
+                        {{ user.get_full_name|default:user.username }}
+                    </h1>
+                    <p class="text-sm text-gray-600">@{{ user.username }}</p>
+                </div>
+            </div>
+
+            <!-- Edit/Save/Cancel Buttons -->
+            <div class="flex gap-2">
+                <button
+                    id="editProfileBtn"
+                    class="bg-primary text-primary-foreground px-4 py-2 rounded hover:opacity-90 transition-opacity inline-flex items-center gap-2 text-sm font-medium"
+                >
+                    <i data-lucide="edit" class="w-4 h-4"></i>
+                    Edit Profile
+                </button>
+                <button
+                    id="saveProfileBtn"
+                    class="hidden bg-success text-success-foreground w-9 h-9 rounded hover:opacity-90 transition-opacity inline-flex items-center justify-center"
+                    title="Save changes"
+                >
+                    <i data-lucide="check" class="w-5 h-5"></i>
+                </button>
+                <button
+                    id="cancelProfileBtn"
+                    class="hidden bg-destructive text-destructive-foreground w-9 h-9 rounded hover:opacity-90 transition-opacity inline-flex items-center justify-center"
+                    title="Cancel"
+                >
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bio - Editable inline -->
+        <div class="mb-6">
+            <div id="bioDisplay" class="text-sm text-foreground leading-relaxed">
+                {{ profile.bio|default:"Add a bio to tell others about yourself and your artistic journey." }}
+            </div>
+            <textarea
+                id="bioInput"
+                class="hidden w-full px-3 py-2 border border-primary rounded bg-input-background resize-none text-sm leading-relaxed"
+                rows="3"
+                placeholder="Write your bio..."
+            ></textarea>
+        </div>
+
+        <!-- Location and Website - Editable inline -->
+        <div class="mb-6 space-y-3">
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0"></i>
+                <span id="locationDisplay">{{ profile.location|default:"Add your location" }}</span>
+                <input
+                    id="locationInput"
+                    type="text"
+                    class="hidden px-2 py-1 border border-primary rounded bg-input-background text-sm"
+                    placeholder="Your location"
+                />
+            </div>
+            <div class="flex items-center gap-2 text-sm text-muted-foreground">
+                <i data-lucide="globe" class="w-4 h-4 flex-shrink-0"></i>
+                <span id="websiteDisplay">{{ profile.website|default:"Add your website" }}</span>
+                <input
+                    id="websiteInput"
+                    type="url"
+                    class="hidden px-2 py-1 border border-primary rounded bg-input-background text-sm"
+                    placeholder="https://your-website.com"
+                />
+            </div>
+        </div>
+        
+        <!-- Level, XP, and Joined Date -->
+        <div class="space-y-3 mb-6 text-sm text-muted-foreground">
+            <div class="flex items-center gap-2">
+                <i data-lucide="star" class="w-4 h-4 flex-shrink-0 text-yellow-500"></i>
+                <span>Level {{ profile.level }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i data-lucide="award" class="w-4 h-4 flex-shrink-0 text-primary"></i>
+                <span>{{ profile.total_xp }} XP</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i data-lucide="calendar" class="w-4 h-4 flex-shrink-0"></i>
+                <span>Joined {{ profile.created_at|date:"F Y" }}</span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="flex gap-6 pb-6 border-b border-border text-sm">
+            <div>
+                <span class="font-semibold mr-1">{{ profile.artwork_created }}</span>
+                <span class="text-muted-foreground">Artworks</span>
+            </div>
+            <div>
+                <span class="font-semibold mr-1">{{ profile.total_xp }}</span>
+                <span class="text-muted-foreground">Total XP</span>
+            </div>
+            <div>
+                <span class="font-semibold mr-1">{{ profile.level }}</span>
+                <span class="text-muted-foreground">Level</span>
+            </div>
+        </div>
+
+        <!-- Account Details -->
+        <div class="mt-6">
+            <div class="text-xs text-muted-foreground mb-2">Account Details</div>
+            <div class="text-sm">
+                <span class="font-medium">Email:</span> {{ user.email }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Update Form (Hidden) -->
+    <form method="post" style="display: none;" id="profileUpdateForm">
+        {% csrf_token %}
+        <input type="hidden" name="bio" id="bioFormInput">
+        <input type="hidden" name="location" id="locationFormInput">
+        <input type="hidden" name="website" id="websiteFormInput">
+    </form>
+
+    <!-- Artworks Grid -->
+    <div class="mb-4">
+        <h2 class="text-xl font-semibold text-gray-900">My Artworks</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Placeholder for artworks - will be implemented later -->
+        <div class="bg-white rounded-lg p-8 text-center border border-gray-300 border-dashed shadow-sm">
+            <i data-lucide="image" class="w-12 h-12 text-gray-500 mx-auto mb-4"></i>
+            <h3 class="text-lg font-semibold mb-2 text-gray-900">No artworks yet</h3>
+            <p class="text-sm text-gray-600 mb-4">Start sharing your creative work with the community!</p>
+            <button 
+                onclick="alert('Upload feature coming soon!')"
+                class="bg-primary text-primary-foreground px-4 py-2 rounded hover:opacity-90 transition-opacity text-sm font-medium"
+            >
+                Upload Your First Artwork
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Enhanced inline profile editing functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const editBtn = document.getElementById('editProfileBtn');
+    const saveBtn = document.getElementById('saveProfileBtn');
+    const cancelBtn = document.getElementById('cancelProfileBtn');
+    
+    const bioDisplay = document.getElementById('bioDisplay');
+    const bioInput = document.getElementById('bioInput');
+    const locationDisplay = document.getElementById('locationDisplay');
+    const locationInput = document.getElementById('locationInput');
+    const websiteDisplay = document.getElementById('websiteDisplay');
+    const websiteInput = document.getElementById('websiteInput');
+    
+    let originalValues = {};
+
+    if (editBtn) {
+        editBtn.addEventListener('click', function() {
+            // Store original values
+            originalValues.bio = bioDisplay.textContent;
+            originalValues.location = locationDisplay.textContent;
+            originalValues.website = websiteDisplay.textContent;
+            
+            // Set input values
+            bioInput.value = originalValues.bio;
+            locationInput.value = originalValues.location;
+            websiteInput.value = originalValues.website;
+            
+            // Toggle visibility
+            editBtn.classList.add('hidden');
+            saveBtn.classList.remove('hidden');
+            cancelBtn.classList.remove('hidden');
+            
+            bioDisplay.classList.add('hidden');
+            bioInput.classList.remove('hidden');
+            locationDisplay.classList.add('hidden');
+            locationInput.classList.remove('hidden');
+            websiteDisplay.classList.add('hidden');
+            websiteInput.classList.remove('hidden');
+        });
+    }
+
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function() {
+            // Update hidden form inputs
+            document.getElementById('bioFormInput').value = bioInput.value;
+            document.getElementById('locationFormInput').value = locationInput.value;
+            document.getElementById('websiteFormInput').value = websiteInput.value;
+            
+            // Submit the form
+            document.getElementById('profileUpdateForm').submit();
+        });
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            // Reset to original values
+            bioInput.value = originalValues.bio;
+            locationInput.value = originalValues.location;
+            websiteInput.value = originalValues.website;
+            
+            // Toggle visibility back
+            editBtn.classList.remove('hidden');
+            saveBtn.classList.add('hidden');
+            cancelBtn.classList.add('hidden');
+            
+            bioDisplay.classList.remove('hidden');
+            bioInput.classList.add('hidden');
+            locationDisplay.classList.remove('hidden');
+            locationInput.classList.add('hidden');
+            websiteDisplay.classList.remove('hidden');
+            websiteInput.classList.add('hidden');
+        });
+    }
+});
+</script>
+{% endblock %}
