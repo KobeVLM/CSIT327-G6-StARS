@@ -29,13 +29,19 @@ except ImportError:
     # python-dotenv not installed; environment variables can still be used
     pass
 
-# Configure Cloudinary (using environment variables only)
-cloudinary.config(
-    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
-    api_key=os.getenv('CLOUDINARY_API_KEY'),
-    api_secret=os.getenv('CLOUDINARY_API_SECRET'),
-    secure=True
-)
+# Configure Cloudinary using CLOUDINARY_URL (recommended)
+CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
+if CLOUDINARY_URL:
+    # Configure using the URL directly
+    cloudinary.config(cloudinary_url=CLOUDINARY_URL)
+else:
+    # Fallback to individual environment variables
+    cloudinary.config(
+        cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+        api_key=os.getenv('CLOUDINARY_API_KEY'),
+        api_secret=os.getenv('CLOUDINARY_API_SECRET'),
+        secure=True
+    )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -164,8 +170,14 @@ USE_CLOUDINARY_IN_DEV = os.getenv('USE_CLOUDINARY_IN_DEV', 'False').lower() == '
 if not DEBUG or USE_CLOUDINARY_IN_DEV:
     # Production or Development with Cloudinary testing: Use Cloudinary
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    # Use environment variable for cloud name to avoid config issues
-    CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', 'dl3d6vid3')
+    
+    # Get cloud name from CLOUDINARY_URL or individual env var
+    if CLOUDINARY_URL:
+        # Extract cloud name from CLOUDINARY_URL: cloudinary://api_key:api_secret@cloud_name
+        CLOUD_NAME = CLOUDINARY_URL.split('@')[-1]
+    else:
+        CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', 'dl3d6vid3')
+    
     MEDIA_URL = f"https://res.cloudinary.com/{CLOUD_NAME}/"
     
     # Django 4.2+ STORAGES setting (for compatibility)
