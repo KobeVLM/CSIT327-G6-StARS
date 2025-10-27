@@ -30,18 +30,24 @@ except ImportError:
     pass
 
 # Configure Cloudinary using CLOUDINARY_URL (recommended)
-CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
-if CLOUDINARY_URL:
-    # Configure using the URL directly
-    cloudinary.config(cloudinary_url=CLOUDINARY_URL)
-else:
-    # Fallback to individual environment variables
-    cloudinary.config(
-        cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
-        api_key=os.getenv('CLOUDINARY_API_KEY'),
-        api_secret=os.getenv('CLOUDINARY_API_SECRET'),
-        secure=True
-    )
+try:
+    CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
+    if CLOUDINARY_URL:
+        # Configure using the URL directly
+        cloudinary.config(cloudinary_url=CLOUDINARY_URL)
+    else:
+        # Fallback to individual environment variables
+        cloudinary.config(
+            cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+            api_key=os.getenv('CLOUDINARY_API_KEY'),
+            api_secret=os.getenv('CLOUDINARY_API_SECRET'),
+            secure=True
+        )
+except Exception as e:
+    # During build, Cloudinary config might fail - that's okay for static collection
+    if not os.getenv('BUILD_PHASE'):
+        print(f"Warning: Cloudinary configuration failed: {e}")
+    pass
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
