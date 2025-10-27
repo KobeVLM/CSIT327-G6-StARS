@@ -164,7 +164,19 @@ USE_CLOUDINARY_IN_DEV = os.getenv('USE_CLOUDINARY_IN_DEV', 'False').lower() == '
 if not DEBUG or USE_CLOUDINARY_IN_DEV:
     # Production or Development with Cloudinary testing: Use Cloudinary
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    MEDIA_URL = f"https://res.cloudinary.com/{cloudinary.config().cloud_name}/"
+    # Use environment variable for cloud name to avoid config issues
+    CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', 'dl3d6vid3')
+    MEDIA_URL = f"https://res.cloudinary.com/{CLOUD_NAME}/"
+    
+    # Django 4.2+ STORAGES setting (for compatibility)
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 else:
     # Development: Use local storage
     MEDIA_URL = '/media/'
