@@ -6,6 +6,8 @@ Pillow>=9.4.0
 gunicorn>=21.0.0
 whitenoise>=6.0.0
 mysqlclient>=2.1.1
+cloudinary>=1.36.0
+django-cloudinary-storage>=0.3.0
 
 
 # python manage.py makemigrations

@@ -16,6 +16,11 @@ import os
 # Import dj_database_url for DATABASE_URL parsing
 import dj_database_url
 
+# Import Cloudinary
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 # Load environment variables
 try:
     from dotenv import load_dotenv
@@ -23,6 +28,14 @@ try:
 except ImportError:
     # python-dotenv not installed; environment variables can still be used
     pass
+
+# Configure Cloudinary (using environment variables only)
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET'),
+    secure=True
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,6 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third-party apps
+    'cloudinary_storage',
+    'cloudinary',
     # STARS apps
     'apps.users',
     'apps.gallery',
@@ -140,9 +156,19 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # WhiteNoise static files compression
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files (user uploads)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Media Files Configuration (Cloudinary is configured above)
+
+# Option to test Cloudinary in development
+USE_CLOUDINARY_IN_DEV = os.getenv('USE_CLOUDINARY_IN_DEV', 'False').lower() == 'true'
+
+if not DEBUG or USE_CLOUDINARY_IN_DEV:
+    # Production or Development with Cloudinary testing: Use Cloudinary
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    MEDIA_URL = f"https://res.cloudinary.com/{cloudinary.config().cloud_name}/"
+else:
+    # Development: Use local storage
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # Authentication
 LOGIN_URL = 'users:login'
