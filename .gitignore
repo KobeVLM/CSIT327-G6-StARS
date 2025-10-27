@@ -5,3 +5,36 @@ __pycache__/
 venv/
 env/
 .venv/
+
+# Environment variables (SECURITY: Never commit these!)
+.env
+.env.local
+.env.production
+.env.staging
+
+# Database
+db.sqlite3
+*.db
+
+# Media files (user uploads)
+media/
+
+# Static files (collected)
+staticfiles/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build files
+dist/
+build/

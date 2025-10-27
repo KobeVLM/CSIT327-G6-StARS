@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import Artwork, Category, Tag, ArtworkLike
-from users.models import UserSearchHistory
+from apps.users.models import UserSearchHistory
 import json
 
 @login_required

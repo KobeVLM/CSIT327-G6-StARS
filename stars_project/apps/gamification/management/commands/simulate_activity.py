@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from gamification.utils import award_upload_xp, award_like_xp
+from apps.gamification.utils import award_upload_xp, award_like_xp
 
 class Command(BaseCommand):
     help = 'Simulate user activity to test badge earning'

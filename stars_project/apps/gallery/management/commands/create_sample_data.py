@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from gallery.models import Category, Tag
+from apps.gallery.models import Category, Tag
 
 class Command(BaseCommand):
     help = 'Create sample categories and tags for the gallery'

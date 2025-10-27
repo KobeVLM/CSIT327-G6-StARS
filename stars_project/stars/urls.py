@@ -21,10 +21,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),
-    path('gallery/', include('gallery.urls')),
-    path('gamification/', include('gamification.urls')),
-    path('moderation/', include('moderation.urls')),
+    path('', include('apps.users.urls')),
+    path('gallery/', include('apps.gallery.urls')),
+    path('gamification/', include('apps.gamification.urls')),
+    path('moderation/', include('apps.moderation.urls')),
 ]
 
 # Serve media files during development

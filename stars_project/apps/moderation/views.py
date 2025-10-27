@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from .models import Report, UserViolation, ModerationSettings
-from gallery.models import Artwork
+from apps.gallery.models import Artwork
 
 def is_staff_or_admin(user):
     """Check if user is staff or admin"""

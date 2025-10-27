@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from gamification.models import Badge, UserBadge
-from gamification.utils import check_and_award_badges
+from apps.gamification.models import Badge, UserBadge
+from apps.gamification.utils import check_and_award_badges
 
 class Command(BaseCommand):
     help = 'Test badge earning functionality for a specific user'

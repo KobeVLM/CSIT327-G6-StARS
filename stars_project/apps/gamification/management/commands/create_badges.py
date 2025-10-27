@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from gamification.models import Badge
+from apps.gamification.models import Badge
 
 class Command(BaseCommand):
     help = 'Create sample badges for the gamification system'

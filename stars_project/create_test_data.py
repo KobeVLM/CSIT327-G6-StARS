@@ -7,8 +7,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stars.settings')
 django.setup()
 
 from django.contrib.auth.models import User
-from gallery.models import Artwork
-from moderation.models import Report, UserViolation
+from apps.gallery.models import Artwork
+from apps.moderation.models import Report, UserViolation
 
 def create_test_data():
     print("Creating test data for moderation system...")

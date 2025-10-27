@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from gallery.models import Artwork
+from apps.gallery.models import Artwork
 
 class Report(models.Model):
     REPORT_REASONS = [
