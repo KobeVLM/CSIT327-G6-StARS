@@ -13,11 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 
-# Import dj_database_url only if needed (for production)
-try:
-    import dj_database_url
-except ImportError:
-    dj_database_url = None
+# Import dj_database_url for DATABASE_URL parsing
+import dj_database_url
 
 # Load environment variables
 try:
@@ -90,49 +87,16 @@ WSGI_APPLICATION = 'stars.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Use DATABASE_URL environment variable for production (Supabase/PostgreSQL)
-# Fallback to individual database settings or MySQL for local development
+# Supabase PostgreSQL Database Configuration
 DATABASE_URL = os.getenv('DATABASE_URL')
 
-if DATABASE_URL and dj_database_url:
-    # Option 1: Use DATABASE_URL (Supabase connection string)
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-elif os.getenv('DB_ENGINE'):
-    # Option 2: Use individual database environment variables
-    DATABASES = {
-        'default': {
-            'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-            'NAME': os.getenv('DB_NAME', 'postgres'),
-            'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', 'localhost'),
-            'PORT': os.getenv('DB_PORT', '5432'),
-            'OPTIONS': {
-                'sslmode': 'require',
-            } if 'supabase.co' in os.getenv('DB_HOST', '') else {},
-        }
-    }
-else:
-    # Option 3: Default to MySQL for local development
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.getenv('DB_NAME', 'stars_db'),
-            'USER': os.getenv('DB_USER', 'root'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-            'PORT': os.getenv('DB_PORT', '3306'),
-            'OPTIONS': {
-                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            },
-        }
-    }
+DATABASES = {
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 
 
 # Password validation
