@@ -65,7 +65,15 @@ if not SECRET_KEY:
         raise ValueError("SECRET_KEY environment variable is required in production")
 
 # Parse ALLOWED_HOSTS from environment variable
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS_ENV = os.getenv('ALLOWED_HOSTS', '')
+if ALLOWED_HOSTS_ENV:
+    ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',') if host.strip()]
+else:
+    # Fallback for build phase or development
+    if DEBUG or os.getenv('BUILD_PHASE'):
+        ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.onrender.com']
+    else:
+        ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -171,8 +179,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# WhiteNoise static files compression
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# WhiteNoise static files compression - configured in STORAGES setting below
 
 # Media Files Configuration (Cloudinary is configured above)
 
@@ -181,7 +188,6 @@ USE_CLOUDINARY_IN_DEV = os.getenv('USE_CLOUDINARY_IN_DEV', 'False').lower() == '
 
 if not DEBUG or USE_CLOUDINARY_IN_DEV:
     # Production or Development with Cloudinary testing: Use Cloudinary
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     
     # Get cloud name from CLOUDINARY_URL or individual env var
     if CLOUDINARY_URL:
@@ -192,7 +198,7 @@ if not DEBUG or USE_CLOUDINARY_IN_DEV:
     
     MEDIA_URL = f"https://res.cloudinary.com/{CLOUD_NAME}/"
     
-    # Django 4.2+ STORAGES setting (for compatibility)
+    # Django 4.2+ STORAGES setting
     STORAGES = {
         "default": {
             "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
@@ -205,6 +211,16 @@ else:
     # Development: Use local storage
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
+    
+    # Django 4.2+ STORAGES setting for development
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 # Authentication
 LOGIN_URL = 'users:login'
