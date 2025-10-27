@@ -15,7 +15,7 @@
 
 ## Project Structure
 
-- **Root directory**: `c:\Users\Kobe\Desktop\CSIT327-G6-StARS\`
+- **Root directory**: `c:\Users\Kobe\Desktop\CSIT327-G6-StARS\stars_project`
 - **Django project**: `stars_project/` (contains `manage.py`)
 - **Project package**: `stars/` (Django project configuration)
 - **Apps grouping**: `apps/` (contains `users`, `gallery`, `gamification`, `moderation`)

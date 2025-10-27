@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: stars-app
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn stars.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false  # You'll set this manually to your Supabase URL
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: SECURE_SSL_REDIRECT
+        value: True
+      - key: STATIC_URL
+        value: /static/
+      - key: MEDIA_URL
+        value: /media/
