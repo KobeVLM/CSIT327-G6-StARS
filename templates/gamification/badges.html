@@ -1,0 +1,175 @@
+{% extends 'app_layout.html' %}
+{% load static %}
+
+{% block title %}Badges - STARS{% endblock %}
+
+{% block app_content %}
+<style>
+    :root {
+        --primary: #b18cff;
+        --secondary: #f1e8ff;
+        --text-dark: #2d2d2d;
+        --gray-soft: #e5e5e5;
+    }
+
+    .bg-primary { background-color: var(--primary); }
+    .bg-secondary { background-color: var(--secondary); }
+    .text-primary { color: var(--primary); }
+    .text-dark { color: var(--text-dark); }
+    .bg-gray-soft { background-color: var(--gray-soft); }
+</style>
+
+<div class="p-8 max-w-6xl mx-auto text-center">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold mb-2 text-dark">🎖️ Badges & Achievements</h1>
+        <p class="text-dark">Track your progress and unlock achievements as you grow as an artist</p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 justify-items-center">
+        <div class="bg-secondary rounded-lg p-6 border border-gray-soft shadow-sm w-full max-w-xs">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-primary mb-1">{{ earned_badges_count }}</div>
+                <div class="text-sm text-dark">Badges Earned</div>
+            </div>
+        </div>
+        <div class="bg-secondary rounded-lg p-6 border border-gray-soft shadow-sm w-full max-w-xs">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-primary mb-1">{{ profile.level }}</div>
+                <div class="text-sm text-dark">Current Level</div>
+            </div>
+        </div>
+        <div class="bg-secondary rounded-lg p-6 border border-gray-soft shadow-sm w-full max-w-xs">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-primary mb-1">{{ profile.total_xp }}</div>
+                <div class="text-sm text-dark">Total XP</div>
+            </div>
+        </div>
+        <div class="bg-secondary rounded-lg p-6 border border-gray-soft shadow-sm w-full max-w-xs">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-primary mb-1">{{ available_badges_count }}</div>
+                <div class="text-sm text-dark">Available Badges</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earned Badges Section -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4 text-dark flex items-center justify-center gap-2">
+            <i data-lucide="award" class="w-6 h-6 text-primary"></i>
+            Earned Badges
+        </h2>
+        
+        {% if earned_badges %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+                {% for badge in earned_badges %}
+                <div class="bg-secondary rounded-lg p-6 border border-gray-soft shadow-sm w-full max-w-xs text-center">
+                    <div class="flex flex-col items-center mb-4 gap-2">
+                        <div class="bg-primary/10 rounded-lg p-3">
+                            <i data-lucide="{{ badge.icon }}" class="w-8 h-8 text-primary"></i>
+                        </div>
+                        <div class="bg-primary/20 rounded-full px-3 py-1">
+                            <span class="text-xs font-medium text-primary">Earned</span>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2 text-dark">{{ badge.name }}</h3>
+                    <p class="text-sm text-dark mb-3">{{ badge.description }}</p>
+                    <div class="text-xs text-dark">
+                        Earned on {{ badge.date_earned|date:"M d, Y" }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-secondary rounded-lg p-8 border border-gray-soft shadow-sm text-center">
+                <i data-lucide="award" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                <h3 class="text-lg font-semibold mb-2 text-dark">No badges earned yet</h3>
+                <p class="text-dark mb-4">Start creating and engaging to earn your first badge!</p>
+                <a href="{% url 'gallery:upload' %}" 
+                   class="bg-primary text-white px-6 py-2 rounded hover:opacity-90 transition-opacity inline-flex items-center gap-2 mx-auto">
+                    <i data-lucide="upload" class="w-4 h-4"></i>
+                    Upload Your First Artwork
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Available Badges Section -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-semibold mb-4 text-dark flex items-center justify-center gap-2">
+            <i data-lucide="target" class="w-6 h-6 text-dark"></i>
+            Available Badges
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+            {% for badge in available_badges %}
+            <div class="bg-secondary rounded-lg p-6 border border-gray-soft shadow-sm opacity-75 w-full max-w-xs text-center">
+                <div class="flex flex-col items-center mb-4 gap-2">
+                    <div class="bg-gray-soft rounded-lg p-3">
+                        <i data-lucide="{{ badge.icon }}" class="w-8 h-8 text-dark"></i>
+                    </div>
+                    {% if badge.level_required %}
+                    <div class="bg-gray-soft rounded-full px-3 py-1">
+                        <span class="text-xs font-medium text-dark">Level {{ badge.level_required }}+</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <h3 class="text-lg font-semibold mb-2 text-dark">{{ badge.name }}</h3>
+                <p class="text-sm text-dark mb-3">{{ badge.description }}</p>
+                
+                {% if badge.progress_percentage %}
+                <div class="mb-2">
+                    <div class="flex justify-between text-xs text-dark mb-1">
+                        <span>Progress</span>
+                        <span>{{ badge.current_value }}/{{ badge.required_value }}</span>
+                    </div>
+                    <div class="w-full bg-gray-soft rounded-full h-2">
+                        <div class="bg-primary h-2 rounded-full" style="width: {{ badge.progress_percentage }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="text-xs text-dark">
+                    {% if badge.level_required and profile.level < badge.level_required %}
+                        Requires Level {{ badge.level_required }}
+                    {% else %}
+                        Ready to earn!
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Level Progress Section -->
+    <div class="bg-secondary rounded-lg p-6 border border-gray-soft shadow-sm text-center">
+        <h2 class="text-xl font-semibold mb-4 text-dark flex items-center justify-center gap-2">
+            <i data-lucide="trending-up" class="w-5 h-5 text-primary"></i>
+            Level Progress
+        </h2>
+        
+        <div class="flex flex-col items-center gap-4 mb-4">
+            <div class="bg-primary/10 rounded-full p-3">
+                <span class="text-xl font-bold text-primary">{{ profile.level }}</span>
+            </div>
+            <div class="w-full max-w-lg">
+                <div class="flex justify-between text-sm text-dark mb-1">
+                    <span>Level {{ profile.level }}</span>
+                    <span>{{ profile.total_xp }} XP</span>
+                </div>
+                <div class="w-full bg-gray-soft rounded-full h-3">
+                    <div class="bg-primary h-3 rounded-full" style="width: {{ level_progress }}%"></div>
+                </div>
+                <div class="text-xs text-dark mt-1">
+                    {{ xp_to_next_level }} XP to next level
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-sm text-dark">
+            Keep creating artwork and engaging with the community to earn more XP and unlock new badges!
+        </div>
+    </div>
+</div>
+{% endblock %}

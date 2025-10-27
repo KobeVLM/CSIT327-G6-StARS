@@ -1,0 +1,65 @@
+<!-- Sidebar for authenticated users -->
+<div class="w-64 bg-white border-r border-gray-200 h-screen flex flex-col">
+    <!-- Navigation Menu -->
+    <nav class="p-4 flex-1">
+        <a href="{% url 'gallery:dashboard' %}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 text-sm transition-colors
+           {% if request.resolver_match.url_name == 'dashboard' %}bg-secondary text-primary{% else %}text-gray-700 hover:bg-secondary hover:text-primary{% endif %}">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span>Home</span>
+        </a>
+
+        <a href="{% url 'gallery:browse' %}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 text-sm transition-colors
+           {% if request.resolver_match.url_name == 'browse' %}bg-secondary text-primary{% else %}text-gray-700 hover:bg-secondary hover:text-primary{% endif %}">
+            <i data-lucide="search" class="w-5 h-5"></i>
+            <span>Browse</span>
+        </a>
+
+        <a href="{% url 'gallery:upload' %}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 text-sm transition-colors
+           {% if request.resolver_match.url_name == 'upload' %}bg-secondary text-primary{% else %}text-gray-700 hover:bg-secondary hover:text-primary{% endif %}">
+            <i data-lucide="upload" class="w-5 h-5"></i>
+            <span>Upload Artwork</span>
+        </a>
+
+        <a href="{% url 'users:profile' %}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 text-sm transition-colors
+           {% if request.resolver_match.url_name == 'profile' %}bg-secondary text-primary{% else %}text-gray-700 hover:bg-secondary hover:text-primary{% endif %}">
+            <i data-lucide="user" class="w-5 h-5"></i>
+            <span>Profile</span>
+        </a>
+
+        <a href="{% url 'gamification:badges' %}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 text-sm transition-colors
+           {% if request.resolver_match.url_name == 'badges' %}bg-secondary text-primary{% else %}text-gray-700 hover:bg-secondary hover:text-primary{% endif %}">
+            <i data-lucide="award" class="w-5 h-5"></i>
+            <span>Badges</span>
+        </a>
+
+        {% if user.is_staff or user.is_superuser %}
+        <div class="mt-4 border-t border-gray-200 pt-2 text-xs text-gray-500 px-4 uppercase">Admin</div>
+        <a href="{% url 'moderation:dashboard' %}" 
+           class="flex items-center gap-3 px-4 py-3 rounded-lg mb-2 text-sm transition-colors
+           {% if request.resolver_match.url_name == 'moderation_dashboard' %}bg-secondary text-primary{% else %}text-gray-700 hover:bg-secondary hover:text-primary{% endif %}">
+            <i data-lucide="shield" class="w-5 h-5"></i>
+            <span>Moderation</span>
+        </a>
+        {% endif %}
+
+        <!-- Quick Stats directly under menu -->
+        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+            <div class="text-xs text-gray-500 mb-2">Quick Stats</div>
+            <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-700">Artwork Created</span>
+                    <span class="text-sm font-semibold text-gray-900">{{ profile.artwork_created }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-700">Total XP</span>
+                    <span class="text-sm font-semibold text-gray-900">{{ profile.total_xp }}</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>

@@ -1,0 +1,160 @@
+{% extends 'app_layout.html' %}
+{% load static %}
+
+{% block title %}Dashboard - STARS{% endblock %}
+
+{% block app_content %}
+
+<style>
+    :root {
+        --primary: #b18cff;
+        --secondary: #f1e8ff;
+        --text-dark: #2d2d2d;
+        --gray-soft: #e5e5e5;
+    }
+    .navbar {
+    padding: 1.5rem 2rem; /* Increase height */
+    font-size: 1.25rem;   
+    }
+
+    /* Center container */
+    .dashboard-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    /* Cards */
+    .dashboard-card {
+        background: #ffffff;
+        border: 2px solid var(--gray-soft);
+        border-radius: 14px;
+        padding: 22px;
+        transition: 0.25s ease;
+    }
+
+    .dashboard-card:hover {
+        border-color: #c1c1c1;
+        transform: translateY(-3px);
+    }
+
+    /* Search Bar */
+    #dashboardSearch {
+        border: 2px solid #c8c8d0;
+        border-radius: 10px;
+        background: #fafafa;
+    }
+    #dashboardSearch:focus {
+        border-color: var(--primary);
+        outline: none;
+        background: #fff;
+    }
+
+    /* Soft icon colors */
+    .text-primary {
+        color: var(--primary) !important;
+    }
+    .bg-primary {
+        background: var(--primary) !important;
+        color: #fff !important;
+    }
+    .bg-secondary {
+        background: var(--secondary) !important;
+    }
+
+    /* Remove shadows globally */
+    .shadow-sm, .shadow, .shadow-lg {
+        box-shadow: none !important;
+    }
+
+</style>
+
+
+<div class="dashboard-container">
+
+    <!-- Header Section -->
+    <div class="mb-6 dashboard-header">
+        <h1 class="text-3xl font-bold text-text-dark">
+            Welcome back, {{ user.get_full_name|default:user.username }}! 🎨
+        </h1>
+        <p class="text-sm text-gray-700">
+            Here's what's happening with your artwork today
+        </p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="relative mb-10">
+        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"></i>
+        <input id="dashboardSearch" type="text" placeholder="Search..." 
+            class="w-full pl-10 pr-10 py-3">
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="dashboard-card">
+            <i data-lucide="image" class="w-6 h-6 text-primary mb-2"></i>
+            <p class="text-2xl font-semibold">{{ stats.artwork_created }}</p>
+            <p class="text-sm text-gray-600">Posts Created</p>
+        </div>
+
+        <div class="dashboard-card">
+            <i data-lucide="award" class="w-6 h-6 text-primary mb-2"></i>
+            <p class="text-2xl font-semibold">{{ stats.level }}</p>
+            <p class="text-sm text-gray-600">Current Level</p>
+        </div>
+
+        <div class="dashboard-card">
+            <i data-lucide="trending-up" class="w-6 h-6 text-primary mb-2"></i>
+            <p class="text-2xl font-semibold">{{ stats.total_xp }}</p>
+            <p class="text-sm text-gray-600">Total XP</p>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="dashboard-card">
+            <i data-lucide="upload" class="w-7 h-7 text-primary mb-3"></i>
+            <h3 class="text-lg font-semibold mb-2">Upload New Post</h3>
+            <p class="text-sm text-gray-600 mb-4">Share your latest artwork</p>
+
+            <button onclick="alert('Upload feature coming soon!')" 
+                class="bg-primary px-5 py-2 rounded-lg text-sm font-medium transition-opacity hover:opacity-90">
+                Upload Artwork
+            </button>
+        </div>
+
+        <div class="dashboard-card">
+            <i data-lucide="edit" class="w-7 h-7 text-primary mb-3"></i>
+            <h3 class="text-lg font-semibold mb-2">Edit Profile</h3>
+            <p class="text-sm text-gray-600 mb-4">Update your information</p>
+
+            <a href="{% url 'users:profile' %}"
+                class="bg-secondary px-5 py-2 rounded-lg text-sm font-medium inline-block hover:opacity-80">
+                Go to Profile
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="dashboard-card">
+        <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+        <ul class="space-y-3 text-left">
+            <li>
+                <span class="text-primary">•</span> Welcome to STARS! Start by uploading your first artwork.
+                <div class="text-xs text-gray-500">Just now</div>
+            </li>
+            <li>
+                <span class="text-primary">•</span> Your account was created successfully!
+                <div class="text-xs text-gray-500">Today</div>
+            </li>
+            <li>
+                <span class="text-primary">•</span> Complete your profile to earn your first badge.
+                <div class="text-xs text-gray-500">Today</div>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+{% endblock %}

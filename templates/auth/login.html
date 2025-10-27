@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - STARS{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-pink-500 via-purple-600 to-indigo-600 
+            flex items-center justify-center px-4">
+
+    <div class="max-w-md w-full bg-white/10 backdrop-blur-2xl p-10 
+                rounded-3xl shadow-2xl border border-white/20 space-y-8">
+
+        <!-- Logo + Header -->
+        <div class="text-center">
+            <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-yellow-300 to-pink-400 
+                        flex items-center justify-center mx-auto shadow-lg">
+                <i data-lucide="palette" class="w-12 h-12 text-white"></i>
+            </div>
+            <h2 class="text-4xl font-extrabold text-white drop-shadow mt-4">
+                Welcome Back 🎨
+            </h2>
+            <p class="text-sm text-white/90 tracking-wide">
+                Sign in to continue to STARS
+            </p>
+        </div>
+
+        <!-- Error Messages -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="p-4 bg-red-500/20 border border-red-600/40 text-white 
+                    rounded-xl flex gap-2 items-center">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            <span class="text-sm font-medium">{{ message }}</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Login Form -->
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <div class="relative">
+                <i data-lucide="mail" 
+                   class="w-5 h-5 absolute left-3 top-3 text-white/70"></i>
+                <input type="text" name="username" placeholder="Email or Username" required
+                    class="w-full pl-12 py-3 rounded-xl bg-white/20 text-white 
+                           placeholder-white/60 border border-white/30 
+                           focus:ring-2 focus:ring-pink-300 focus:bg-white/25 transition">
+            </div>
+
+            <div class="relative">
+                <i data-lucide="lock" 
+                   class="w-5 h-5 absolute left-3 top-3 text-white/70"></i>
+                <input type="password" name="password" placeholder="Password" required
+                    class="w-full pl-12 py-3 rounded-xl bg-white/20 text-white 
+                           placeholder-white/60 border border-white/30 
+                           focus:ring-2 focus:ring-indigo-300 focus:bg-white/25 transition">
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-300 
+                       via-pink-400 to-purple-500 text-white font-bold 
+                       shadow-xl hover:opacity-90 transition-transform 
+                       transform hover:scale-105">
+                Sign In
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <p class="text-center text-white/90 font-medium">
+            Don't have an account?
+            <a href="{% url 'users:register' %}" 
+               class="text-yellow-300 font-semibold hover:underline">
+                Create one here
+            </a>
+        </p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => lucide?.createIcons());
+</script>
+{% endblock %}

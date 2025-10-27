@@ -1,0 +1,295 @@
+/* STARS - Global Styles for Django */
+
+:root {
+    --background: #F4F6FF; 
+    --foreground: #0F172A;
+    
+    --card: #FFFFFF;
+    --card-foreground: #1E293B;
+    
+    --primary: #4F57F2; 
+    --primary-foreground: #FFFFFF;
+    
+    --secondary: #E3E7FF; 
+    --secondary-foreground: #1E293B;
+    
+    --muted: #EEF1F8;
+    --muted-foreground: #64748B;
+    
+    --accent: #CBD3FF; 
+    --accent-foreground: #1E293B;
+    
+    --destructive: #DC2626;
+    --destructive-foreground: #FFFFFF;
+    
+    --success: #11A97B;
+    --success-foreground: #FFFFFF;
+
+   
+    --border: #D4DAE9;
+    --input: #D8DDF0;
+    --input-background: #FFFFFF;
+    
+    --ring: #4F57F2;
+}
+
+/* Dark mode variables removed to ensure light theme only */
+
+/* Tailwind-compatible CSS custom properties */
+/* Dark mode media query removed to force light theme */
+
+/* CSS Reset and Base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: var(--font-size);
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+}
+
+/* Reset margins for common elements */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+li,
+blockquote,
+figure {
+    margin: 0;
+    padding: 0;
+}
+
+/* Typography - Only apply margins within content areas */
+.content h1,
+[class*="p-"] h1 {
+    font-size: 1.875rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-md);
+}
+
+.content h2,
+[class*="p-"] h2 {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-md);
+}
+
+.content h3,
+[class*="p-"] h3 {
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-sm);
+}
+
+.content h4,
+[class*="p-"] h4 {
+    font-size: 1rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-sm);
+}
+
+.content p,
+[class*="p-"] p {
+    font-size: 1rem;
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+    color: var(--foreground);
+    margin: 0 0 var(--spacing-md);
+}
+
+.content label,
+[class*="p-"] label {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+    color: var(--foreground);
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+/* Common utility classes for compatibility */
+.bg-primary {
+    background-color: var(--primary) !important;
+}
+
+.bg-background {
+    background-color: var(--background) !important;
+}
+
+.bg-card {
+    background-color: var(--card) !important;
+}
+
+.bg-white {
+    background-color: #ffffff !important;
+}
+
+.bg-muted {
+    background-color: var(--muted) !important;
+}
+
+.bg-secondary {
+    background-color: var(--secondary) !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-foreground {
+    color: #000000 !important;
+}
+
+.text-black {
+    color: #000000 !important;
+}
+
+.text-muted-foreground {
+    color: #6B7280 !important;
+}
+
+.text-gray-900 {
+    color: #000000 !important;
+}
+
+.text-gray-800 {
+    color: #1F2937 !important;
+}
+
+.text-gray-700 {
+    color: #374151 !important;
+}
+
+.text-gray-600 {
+    color: #4B5563 !important;
+}
+
+.text-gray-500 {
+    color: #6B7280 !important;
+}
+
+.border-border {
+    border-color: var(--border) !important;
+}
+
+.border-gray-200 {
+    border-color: #E5E7EB !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-2 {
+    gap: var(--spacing-sm);
+}
+
+.gap-3 {
+    gap: 0.75rem;
+}
+
+.gap-4 {
+    gap: var(--spacing-md);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.text-xs {
+    font-size: 0.75rem;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+.text-xl {
+    font-size: 1.25rem;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+.font-medium {
+    font-weight: var(--font-weight-medium);
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.rounded {
+    border-radius: var(--radius-md);
+}
+
+.rounded-lg {
+    border-radius: var(--radius-lg);
+}
+
+.rounded-xl {
+    border-radius: var(--radius-xl);
+}
+
+.shadow-sm {
+    box-shadow: var(--shadow-sm);
+}
+
+.shadow-md {
+    box-shadow: var(--shadow-md);
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow-lg);
+}

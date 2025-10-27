@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Login - STARS{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-red-600 via-rose-500 to-orange-500
+            flex items-center justify-center px-4">
+
+    <div class="max-w-md w-full bg-white/10 backdrop-blur-2xl p-10 
+                rounded-3xl shadow-2xl border border-white/20 space-y-8">
+
+        <!-- Logo + Header -->
+        <div class="text-center">
+            <div class="w-24 h-24 bg-gradient-to-br from-yellow-400 to-red-500
+                        rounded-3xl flex items-center justify-center mx-auto shadow-xl">
+                <i data-lucide="shield" class="w-12 h-12 text-white"></i>
+            </div>
+            <h2 class="text-4xl font-extrabold text-white mt-4 drop-shadow">
+                Admin Portal 🔐
+            </h2>
+            <p class="text-sm text-white/90 tracking-wide">
+                Restricted access for authorized personnel only
+            </p>
+        </div>
+
+        <!-- Warning -->
+        <div class="p-4 bg-white/15 border border-red-300/40 rounded-xl flex gap-3 text-white">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            <p class="text-xs">
+                Unauthorized access attempts are logged for security monitoring.
+            </p>
+        </div>
+
+        <!-- Error Messages -->
+        {% if messages %}
+        {% for message in messages %}
+        <div class="p-4 bg-red-500/20 border border-red-600/50 text-white rounded-xl flex items-start gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+            <span class="text-sm">{{ message }}</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Login Form -->
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <div class="relative">
+                <i data-lucide="mail"
+                   class="w-5 h-5 absolute left-3 top-3 text-white/70"></i>
+                <input type="email" name="username" placeholder="Admin Email" required
+                    class="w-full pl-12 py-3 rounded-xl bg-white/20 text-white placeholder-white/60
+                           border border-white/30 focus:ring-2 focus:ring-yellow-300
+                           focus:bg-white/30 transition">
+            </div>
+
+            <div class="relative">
+                <i data-lucide="lock-keyhole"
+                   class="w-5 h-5 absolute left-3 top-3 text-white/70"></i>
+                <input type="password" name="password" placeholder="Password" required
+                    class="w-full pl-12 py-3 rounded-xl bg-white/20 text-white placeholder-white/60
+                           border border-white/30 focus:ring-2 focus:ring-orange-300
+                           focus:bg-white/30 transition">
+            </div>
+
+            <div class="flex items-center gap-2">
+                <input checked type="checkbox" disabled
+                    class="w-4 h-4 rounded border-white/40 bg-white/20 text-yellow-400">
+                <label class="text-xs text-white/90">
+                    Administrator authentication required
+                </label>
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-300 
+                       via-red-400 to-rose-500 text-white font-bold shadow-xl
+                       hover:scale-105 transition-transform">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                Secure Login
+            </button>
+        </form>
+
+        <!-- Navigation -->
+        <p class="text-center text-white/90 text-sm mt-5">
+            <a href="{% url 'users:login' %}"
+               class="hover:underline inline-flex items-center gap-1 text-white font-medium">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Back to User Login
+            </a>
+        </p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => lucide?.createIcons());
+</script>
+{% endblock %}

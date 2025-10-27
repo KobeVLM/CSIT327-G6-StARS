@@ -1,0 +1,61 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}STARS - Student Artist Space{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN for quick start -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#F5F7FB',
+                        foreground: '#2C3E50',
+                        card: '#ffffff',
+                        'card-foreground': '#2C3E50',
+                        primary: '#5865F2',
+                        'primary-foreground': '#ffffff',
+                        secondary: '#E8EAF6',
+                        'secondary-foreground': '#2C3E50',
+                        muted: '#F5F7FB',
+                        'muted-foreground': '#7C8AA0',
+                        border: '#E0E4EB',
+                        input: '#E0E4EB',
+                        'input-background': '#ffffff',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/globals.css' %}">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="h-full" style="background-color: #F5F7FB; color: #2C3E50;">
+    {% block content %}
+    {% endblock %}
+    
+    <!-- JavaScript -->
+    <script src="{% static 'js/app.js' %}"></script>
+    <script>
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

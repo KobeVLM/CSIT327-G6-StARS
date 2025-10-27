@@ -1,0 +1,170 @@
+{% extends 'app_layout.html' %}
+{% block title %}Upload Artwork - StARS{% endblock %}
+
+{% block app_content %}
+<style>
+    :root {
+        --primary: #b18cff;
+        --secondary: #f1e8ff;
+        --text-dark: #2d2d2d;
+        --gray-soft: #e5e5e5;
+    }
+
+    /* Upload area hover */
+    #uploadArea:hover {
+        border-color: var(--primary);
+        background-color: var(--secondary);
+    }
+
+
+    /* Buttons */
+    button[type="submit"] {
+        background-color: var(--primary);
+        color: #fff;
+    }
+    button[type="submit"]:hover {
+        opacity: 0.9;
+    }
+    a[href="{% url 'gallery:dashboard' %}"] {
+        background-color: var(--secondary);
+        color: var(--text-dark);
+    }
+    a[href="{% url 'gallery:dashboard' %}"]:hover {
+        opacity: 0.85;
+    }
+
+    /* Radio button selected color */
+    input[type="radio"]:checked {
+        accent-color: var(--primary);
+    }
+    /* Hide unwanted bottom pink bar */
+.footer, .bottom-bar, .pink-footer {
+    display: none !important;
+}
+
+
+    /* Upload tips box colors only */
+    .upload-tips {
+        background-color: var(--secondary);
+        border-color: var(--primary);
+        color: var(--text-dark);
+    }
+</style>
+
+<div class="p-8 max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-text-dark mb-2">Upload Artwork</h1>
+        <p class="text-gray-700">Share your creative work with the StARS community</p>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+            <!-- Image Upload Area -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-text-dark mb-2">Artwork Image *</label>
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer" id="uploadArea">
+                    <input type="file" name="image" id="imageInput" accept="image/*" class="hidden" required>
+                    <div id="uploadPlaceholder">
+                        <i data-lucide="upload" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                        <p class="text-lg font-medium text-text-dark mb-2">Click to upload or drag and drop</p>
+                        <p class="text-sm text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                    <div id="imagePreview" class="hidden">
+                        <img id="previewImg" class="max-w-full max-h-64 mx-auto rounded-lg shadow-md">
+                        <p class="mt-2 text-sm text-gray-600" id="fileName"></p>
+                        <button type="button" id="removeImage" class="mt-2 text-red-600 hover:text-red-800 text-sm">Remove image</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artwork Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-text-dark mb-2">Title *</label>
+                    <input type="text" name="title" id="title" required placeholder="Give your artwork a title" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label for="category" class="block text-sm font-medium text-text-dark mb-2">Category</label>
+                    <select name="category" id="category" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="">Select a category</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label for="description" class="block text-sm font-medium text-text-dark mb-2">Description</label>
+                <textarea name="description" id="description" rows="4" placeholder="Tell us about your artwork..." class="w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+            </div>
+
+            <div class="mb-6">
+                <label for="tags" class="block text-sm font-medium text-text-dark mb-2">Tags</label>
+                <input type="text" name="tags" id="tags" placeholder="digital art, fantasy, portrait" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <p class="mt-1 text-sm text-gray-500">Tags help others discover your artwork</p>
+            </div>
+
+            <!-- Visibility -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-text-dark mb-2">Visibility</label>
+                <div class="space-y-2">
+                    <label class="flex items-center"><input type="radio" name="visibility" value="public" checked><span class="ml-2 text-sm text-text-dark"><strong>Public</strong> - Anyone can see</span></label>
+                    <label class="flex items-center"><input type="radio" name="visibility" value="unlisted"><span class="ml-2 text-sm text-text-dark"><strong>Unlisted</strong> - Only with link</span></label>
+                    <label class="flex items-center"><input type="radio" name="visibility" value="private"><span class="ml-2 text-sm text-text-dark"><strong>Private</strong> - Only you</span></label>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-3">
+                <a href="{% url 'gallery:dashboard' %}" class="px-6 py-2 rounded-md" style="background-color: var(--secondary); color: var(--text-dark)">Cancel</a>
+                <button type="submit" id="submitBtn" class="px-6 py-2 rounded-md" style="background-color: var(--primary); color: #fff;">
+                    <span id="submitText">Upload Artwork</span>
+                    <span id="uploadingText" class="hidden"><i data-lucide="loader-2" class="w-4 h-4 animate-spin inline mr-2"></i>Uploading...</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Upload Tips -->
+    <div class="mt-8 border rounded-lg p-6 upload-tips">
+        <h3 class="flex items-center text-lg font-semibold mb-3"><i data-lucide="lightbulb" class="w-5 h-5 mr-2"></i>Upload Tips</h3>
+        <ul class="space-y-2 text-sm">
+            <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0"></i>Use high-quality images (at least 1200px wide)</li>
+            <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0"></i>Add relevant tags to help others discover your work</li>
+            <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0"></i>Write a compelling description</li>
+            <li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0"></i>Choose the right category</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const fileName = document.getElementById('fileName');
+    const removeImage = document.getElementById('removeImage');
+    const uploadForm = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const uploadingText = document.getElementById('uploadingText');
+
+    uploadArea.addEventListener('click', () => { if (!imagePreview.classList.contains('hidden')) return; imageInput.click(); });
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = "#b18cff"; uploadArea.style.backgroundColor = "#f1e8ff"; });
+    uploadArea.addEventListener('dragleave', (e) => { e.preventDefault(); uploadArea.style.borderColor = "#d1d1d1"; uploadArea.style.backgroundColor = "white"; });
+    uploadArea.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.style.borderColor = "#d1d1d1"; uploadArea.style.backgroundColor = "white"; if(e.dataTransfer.files.length>0) handleFileSelect(e.dataTransfer.files[0]); });
+
+    imageInput.addEventListener('change', (e) => { if(e.target.files.length>0) handleFileSelect(e.target.files[0]); });
+    function handleFileSelect(file){if(!file.type.startsWith('image/')){alert('Please select an image file.');return;}if(file.size>10*1024*1024){alert('File size must be less than 10MB.');return;}const reader=new FileReader();reader.onload=(e)=>{previewImg.src=e.target.result;fileName.textContent=file.name;uploadPlaceholder.classList.add('hidden');imagePreview.classList.remove('hidden');};reader.readAsDataURL(file);}
+    removeImage.addEventListener('click',()=>{imageInput.value='';uploadPlaceholder.classList.remove('hidden');imagePreview.classList.add('hidden');previewImg.src='';fileName.textContent='';});
+    uploadForm.addEventListener('submit',()=>{submitBtn.disabled=true;submitText.classList.add('hidden');uploadingText.classList.remove('hidden');});
+    if(typeof lucide!=='undefined') lucide.createIcons();
+});
+</script>
+{% endblock %}

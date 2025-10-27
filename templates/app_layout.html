@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- App Header -->
+{% include 'partials/app_header.html' %}
+
+<!-- Main Content Area -->
+<div class="flex">
+    <!-- Sidebar -->
+    {% include 'partials/sidebar.html' %}
+    
+    <!-- Page Content -->
+    <main class="flex-1" style="background-color: #F5F7FB;">
+        {% block app_content %}
+        {% endblock %}
+    </main>
+</div>
+{% endblock %}

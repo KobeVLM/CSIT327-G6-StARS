@@ -1,0 +1,102 @@
+/* STARS - Global Styles for Django — Minimalist Edition */
+
+:root {
+    /* 🌑 Minimalist Brand Palette */
+    --primary: #3B82F6; /* Soft blue accent */
+    --primary-foreground: #FFFFFF;
+
+    --secondary: #1E293B; /* Deep neutral blue-gray */
+    --secondary-foreground: #FFFFFF;
+
+    --success: #10B981; /* Clean emerald */
+    --success-foreground: #FFFFFF;
+
+    --destructive: #EF4444; /* Minimalist red */
+    --destructive-foreground: #FFFFFF;
+
+    /* 🎨 Minimalist Neutrals */
+    --background: #FAFAFA; /* Off-white */
+    --foreground: #111827; /* Deep charcoal text */
+
+    --card: #FFFFFF;
+    --card-foreground: #111827;
+
+    --muted: #E5E7EB; /* Light gray */
+    --muted-foreground: #6B7280; /* Subtle gray */
+
+    /* 🧩 Borders & Inputs */
+    --border: #D1D5DB;
+    --input: #E5E7EB;
+    --input-background: #FFFFFF;
+
+    --ring: var(--primary);
+}
+
+/* Base reset & typography stay the same */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: var(--font-size); height: 100%; }
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+/* Typography Rules are unchanged */
+.content h1,
+[class*="p-"] h1 {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+}
+
+.content h2,
+[class*="p-"] h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+}
+
+.content p,
+[class*="p-"] p {
+    font-size: 1rem;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+}
+
+/* ✅ Utility Classes — only color updated */
+.bg-primary { background-color: var(--primary) !important; }
+.bg-background { background-color: var(--background) !important; }
+.bg-card { background-color: var(--card) !important; }
+.bg-muted { background-color: var(--muted) !important; }
+
+.text-primary { color: var(--primary) !important; }
+.text-foreground { color: var(--foreground) !important; }
+.text-muted-foreground { color: var(--muted-foreground) !important; }
+
+.border-border { border-color: var(--border) !important; }
+
+.hidden { display: none !important; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+
+.text-sm { font-size: 0.875rem; }
+.text-lg { font-size: 1.125rem; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+
+.rounded { border-radius: 6px; }
+.rounded-lg { border-radius: 10px; }
+.rounded-xl { border-radius: 14px; }
+
+.shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.shadow-md { box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+.shadow-lg { box-shadow: 0 4px 14px rgba(0,0,0,0.1); }
