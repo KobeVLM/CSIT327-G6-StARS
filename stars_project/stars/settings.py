@@ -52,11 +52,17 @@ except Exception as e:
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-f@27#1*k!7oa5w@21%9s#j26jqqhc3oqe!5lk^shddc_xk%d+=')
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        # Only use fallback in development
+        SECRET_KEY = 'django-insecure-f@27#1*k!7oa5w@21%9s#j26jqqhc3oqe!5lk^shddc_xk%d+='
+    else:
+        raise ValueError("SECRET_KEY environment variable is required in production")
 
 # Parse ALLOWED_HOSTS from environment variable
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
