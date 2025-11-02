@@ -1,4 +1,5 @@
 {% extends 'app_layout.html' %}
+{% load cloudinary_tags %}
 
 {% block title %}{{ artwork.title }} by {{ artwork.artist.username }} - StARS{% endblock %}
 
@@ -21,7 +22,7 @@
                 <!-- Image -->
                 <div class="relative bg-gray-100 dark:bg-gray-700">
                     {% if artwork.image %}
-                    <img src="{{ artwork.image.url }}" alt="{{ artwork.title }}" 
+                    <img src="{{ artwork.image|cloudinary_url:'q_auto,f_auto' }}" alt="{{ artwork.title }}" 
                          class="w-full h-auto max-h-[70vh] object-contain">
                     {% else %}
                     <div class="w-full h-96 flex items-center justify-center">

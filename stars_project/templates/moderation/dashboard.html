@@ -1,5 +1,6 @@
 {% extends 'app_layout.html' %}
 {% load static %}
+{% load cloudinary_tags %}
 
 {% block title %}Content Moderation - STARS{% endblock %}
 
@@ -64,7 +65,7 @@
                         <div class="flex gap-4">
                             {% if report.artwork.image %}
                                 <img 
-                                    src="{{ report.artwork.image.url }}" 
+                                    src="{{ report.artwork.image|cloudinary_thumbnail:'128x96' }}" 
                                     alt="{{ report.artwork.title }}"
                                     class="w-32 h-24 object-cover rounded border border-gray-200"
                                 />

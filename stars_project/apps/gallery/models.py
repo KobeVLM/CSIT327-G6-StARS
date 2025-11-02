@@ -87,11 +87,23 @@ class Artwork(models.Model):
     
     def create_thumbnail(self):
         """Create a thumbnail for the artwork"""
+        from django.conf import settings
+        from django.core.files.base import ContentFile
+        from io import BytesIO
+        
         if not self.image:
             return
         
         try:
-            # Open the image
+            # For Cloudinary, we can use transformations instead of manual thumbnail creation
+            if hasattr(settings, 'CLOUDINARY_STORAGE') or 'cloudinary' in str(settings.STORAGES.get('default', {}).get('BACKEND', '')):
+                # Cloudinary handles thumbnails automatically via URL transformations
+                # We'll just mark that thumbnail is available
+                self.thumbnail = self.image
+                super().save(update_fields=['thumbnail'])
+                return
+            
+            # Local development thumbnail creation
             img = Image.open(self.image.path)
             
             # Convert to RGB if necessary
@@ -101,20 +113,21 @@ class Artwork(models.Model):
             # Create thumbnail
             img.thumbnail((300, 300), Image.Resampling.LANCZOS)
             
-            # Generate thumbnail path
+            # Generate thumbnail name
             base_name = os.path.splitext(os.path.basename(self.image.name))[0]
             thumb_name = f"{base_name}_thumb.jpg"
-            thumb_path = os.path.join('artworks/thumbnails', 
-                                    self.created_at.strftime('%Y/%m/%d'), 
-                                    thumb_name)
             
-            # Save thumbnail
-            full_thumb_path = os.path.join('media', thumb_path)
-            os.makedirs(os.path.dirname(full_thumb_path), exist_ok=True)
-            img.save(full_thumb_path, 'JPEG', quality=85, optimize=True)
+            # Save to BytesIO
+            thumb_io = BytesIO()
+            img.save(thumb_io, 'JPEG', quality=85, optimize=True)
+            thumb_io.seek(0)
             
-            # Update thumbnail field
-            self.thumbnail = thumb_path
+            # Save as Django file
+            self.thumbnail.save(
+                thumb_name,
+                ContentFile(thumb_io.getvalue()),
+                save=False
+            )
             super().save(update_fields=['thumbnail'])
             
         except Exception as e:

@@ -1,4 +1,5 @@
 {% extends 'app_layout.html' %}
+{% load cloudinary_tags %}
 
 {% block title %}{{ profile_user.username }} - StARS{% endblock %}
 
@@ -131,10 +132,10 @@
                 <div class="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
                     <a href="{% url 'gallery:artwork_detail' artwork.pk %}">
                         {% if artwork.thumbnail %}
-                        <img src="{{ artwork.thumbnail.url }}" alt="{{ artwork.title }}" 
+                        <img src="{{ artwork.thumbnail|cloudinary_thumbnail:'300x300' }}" alt="{{ artwork.title }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         {% elif artwork.image %}
-                        <img src="{{ artwork.image.url }}" alt="{{ artwork.title }}" 
+                        <img src="{{ artwork.image|cloudinary_thumbnail:'300x300' }}" alt="{{ artwork.title }}" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         {% else %}
                         <div class="w-full h-full flex items-center justify-center">

@@ -1,4 +1,5 @@
 {% extends 'app_layout.html' %}
+{% load cloudinary_tags %}
 
 {% block title %}Browse Artworks - StARS{% endblock %}
 
@@ -114,10 +115,10 @@
                 <!-- Artwork Image -->
                 <div class="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
                     {% if artwork.thumbnail %}
-                    <img src="{{ artwork.thumbnail.url }}" alt="{{ artwork.title }}" 
+                    <img src="{{ artwork.thumbnail|cloudinary_thumbnail:'400x400' }}" alt="{{ artwork.title }}" 
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     {% elif artwork.image %}
-                    <img src="{{ artwork.image.url }}" alt="{{ artwork.title }}" 
+                    <img src="{{ artwork.image|cloudinary_thumbnail:'400x400' }}" alt="{{ artwork.title }}" 
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     {% else %}
                     <div class="w-full h-full flex items-center justify-center">
@@ -181,9 +182,9 @@
                 <!-- Thumbnail -->
                 <div class="w-24 h-24 flex-shrink-0 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                     {% if artwork.thumbnail %}
-                    <img src="{{ artwork.thumbnail.url }}" alt="{{ artwork.title }}" class="w-full h-full object-cover">
+                    <img src="{{ artwork.thumbnail|cloudinary_thumbnail:'96x96' }}" alt="{{ artwork.title }}" class="w-full h-full object-cover">
                     {% elif artwork.image %}
-                    <img src="{{ artwork.image.url }}" alt="{{ artwork.title }}" class="w-full h-full object-cover">
+                    <img src="{{ artwork.image|cloudinary_thumbnail:'96x96' }}" alt="{{ artwork.title }}" class="w-full h-full object-cover">
                     {% else %}
                     <div class="w-full h-full flex items-center justify-center">
                         <i data-lucide="image" class="w-8 h-8 text-gray-400"></i>
