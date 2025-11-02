@@ -75,15 +75,21 @@ class Artwork(models.Model):
         return reverse('gallery:artwork_detail', kwargs={'pk': self.pk})
     
     def save(self, *args, **kwargs):
-        # Create thumbnail if needed
+        # Save first
         super().save(*args, **kwargs)
         
-        if self.image and not self.thumbnail:
+        # For Cloudinary, we don't need separate thumbnails - just use transformations
+        # Only create thumbnails for local development
+        from django.conf import settings
+        is_cloudinary = hasattr(settings, 'CLOUDINARY_STORAGE') or 'cloudinary' in str(settings.STORAGES.get('default', {}).get('BACKEND', ''))
+        
+        if self.image and not self.thumbnail and not is_cloudinary:
             self.create_thumbnail()
         
         # Update artist's artwork count
-        self.artist.userprofile.artwork_created = self.artist.artworks.filter(visibility='public').count()
-        self.artist.userprofile.save()
+        if hasattr(self.artist, 'userprofile'):
+            self.artist.userprofile.artwork_created = self.artist.artworks.filter(visibility='public').count()
+            self.artist.userprofile.save()
     
     def create_thumbnail(self):
         """Create a thumbnail for the artwork"""

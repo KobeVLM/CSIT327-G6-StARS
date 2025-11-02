@@ -194,14 +194,9 @@ USE_CLOUDINARY_IN_DEV = os.getenv('USE_CLOUDINARY_IN_DEV', 'False').lower() == '
 if not DEBUG or USE_CLOUDINARY_IN_DEV:
     # Production or Development with Cloudinary testing: Use Cloudinary
     
-    # Get cloud name from CLOUDINARY_URL or individual env var
-    if CLOUDINARY_URL:
-        # Extract cloud name from CLOUDINARY_URL: cloudinary://api_key:api_secret@cloud_name
-        CLOUD_NAME = CLOUDINARY_URL.split('@')[-1]
-    else:
-        CLOUD_NAME = os.getenv('CLOUDINARY_CLOUD_NAME', 'dl3d6vid3')
-    
-    MEDIA_URL = f"https://res.cloudinary.com/{CLOUD_NAME}/"
+    # For django-cloudinary, MEDIA_URL should be empty or a simple path
+    # The cloudinary storage backend will handle the full URL generation
+    MEDIA_URL = '/media/'
     
     # Django 4.2+ STORAGES setting
     STORAGES = {

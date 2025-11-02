@@ -17,14 +17,28 @@ def cloudinary_thumbnail(image_field, size="300x300"):
     if hasattr(settings, 'CLOUDINARY_STORAGE') or 'cloudinary' in str(settings.STORAGES.get('default', {}).get('BACKEND', '')):
         image_url = str(image_field.url)
         
+        # Clean up any duplicate cloudinary URLs
+        if image_url.count('res.cloudinary.com') > 1:
+            # Extract the clean path from the duplicated URL
+            # From: https://res.cloudinary.com/.../https:/res.cloudinary.com/.../artworks/image.png
+            # To: artworks/image.png
+            parts = image_url.split('/')
+            # Find the last occurrence of the actual file path
+            if 'artworks' in image_url:
+                artwork_index = -1
+                for i, part in enumerate(parts):
+                    if part == 'artworks':
+                        artwork_index = i
+                clean_path = '/'.join(parts[artwork_index:])
+                image_url = f"https://res.cloudinary.com/dl3d6vid3/image/upload/{clean_path}"
+        
         # If it's already a Cloudinary URL, add transformation
         if 'res.cloudinary.com' in image_url:
             # Insert transformation parameters
-            # From: https://res.cloudinary.com/cloud_name/image/upload/v1234/image.jpg
-            # To: https://res.cloudinary.com/cloud_name/image/upload/c_fill,w_300,h_300/v1234/image.jpg
+            width, height = size.split('x')
             return re.sub(
                 r'(https://res\.cloudinary\.com/[^/]+/image/upload/)',
-                rf'\1c_fill,w_{size.split("x")[0]},h_{size.split("x")[1]}/',
+                rf'\1c_fill,w_{width},h_{height},q_auto,f_auto/',
                 image_url
             )
     
@@ -44,11 +58,30 @@ def cloudinary_url(image_field, transformations=""):
     if hasattr(settings, 'CLOUDINARY_STORAGE') or 'cloudinary' in str(settings.STORAGES.get('default', {}).get('BACKEND', '')):
         image_url = str(image_field.url)
         
+        # Clean up any duplicate cloudinary URLs
+        if image_url.count('res.cloudinary.com') > 1:
+            # Extract the clean path from the duplicated URL
+            parts = image_url.split('/')
+            if 'artworks' in image_url:
+                artwork_index = -1
+                for i, part in enumerate(parts):
+                    if part == 'artworks':
+                        artwork_index = i
+                clean_path = '/'.join(parts[artwork_index:])
+                image_url = f"https://res.cloudinary.com/dl3d6vid3/image/upload/{clean_path}"
+        
         # If it's already a Cloudinary URL and transformations are provided
         if 'res.cloudinary.com' in image_url and transformations:
             return re.sub(
                 r'(https://res\.cloudinary\.com/[^/]+/image/upload/)',
                 rf'\1{transformations}/',
+                image_url
+            )
+        elif 'res.cloudinary.com' in image_url:
+            # Add basic optimization if no transformations specified
+            return re.sub(
+                r'(https://res\.cloudinary\.com/[^/]+/image/upload/)',
+                r'\1q_auto,f_auto/',
                 image_url
             )
     
