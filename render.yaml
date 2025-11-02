@@ -12,7 +12,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        sync: false  # You'll set this manually to your Supabase URL
+        sync: false
       - key: ALLOWED_HOSTS
         value: "*"
       - key: SECURE_SSL_REDIRECT

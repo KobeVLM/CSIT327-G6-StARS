@@ -37,8 +37,8 @@ class Artwork(models.Model):
     
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='artworks/%Y/%m/%d/', max_length=500)  # Increased for Cloudinary URLs
-    thumbnail = models.ImageField(upload_to='artworks/thumbnails/%Y/%m/%d/', blank=True, max_length=500)  # Increased for Cloudinary URLs
+    image = models.ImageField(upload_to='artworks/', max_length=500)  # Simplified path for Cloudinary
+    thumbnail = models.ImageField(upload_to='artworks/thumbnails/', blank=True, max_length=500)  # Simplified path for Cloudinary
     
     # Relationships
     artist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='artworks')
