@@ -47,10 +47,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # STARS apps
-    'users',
-    'gallery',
-    'gamification',
-    'moderation',
+    'apps.users',
+    'apps.gallery',
+    'apps.gamification',
+    'apps.moderation',
 ]
 
 MIDDLEWARE = [
