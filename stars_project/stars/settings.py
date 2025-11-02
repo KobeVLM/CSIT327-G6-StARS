@@ -140,6 +140,11 @@ DATABASES = {
     )
 }
 
+# Force Django to use public schema # ! I messed up... I accidentally dropped the 'public' schema in the database
+DATABASES['default']['OPTIONS'] = {
+    'options': '-c search_path=public'
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
