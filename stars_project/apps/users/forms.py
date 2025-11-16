@@ -25,6 +25,7 @@ class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={"autofocus": True}))
 
 
+# To be fixed
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
@@ -35,7 +36,7 @@ class UserProfileForm(forms.ModelForm):
             'dark_mode', 'language', 'theme_preference',
         ]
 
-
+# To be Fixed
 class UserPreferencesForm(forms.ModelForm):
     class Meta:
         model = UserPreferences

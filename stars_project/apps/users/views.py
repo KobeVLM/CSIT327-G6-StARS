@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -154,3 +154,12 @@ def settings_view(request):
         return redirect('users:settings')
     
     return render(request, 'users/settings.html', {'profile': profile})
+
+def logout_view(request):
+    """Custom logout view that clears success messages before redirecting to login"""
+    # Clear any success messages that shouldn't persist to login page
+    storage = messages.get_messages(request)
+    storage.used = True  # Mark all messages as used/consumed
+    
+    logout(request)
+    return redirect('users:login')

@@ -74,30 +74,6 @@
                 placeholder="Write your bio..."
             ></textarea>
         </div>
-
-        <!-- Location and Website - Editable inline -->
-        <div class="mb-6 space-y-3">
-            <div class="flex items-center gap-2 text-sm text-muted-foreground">
-                <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0"></i>
-                <span id="locationDisplay">{{ profile.location|default:"Add your location" }}</span>
-                <input
-                    id="locationInput"
-                    type="text"
-                    class="hidden px-2 py-1 border border-primary rounded bg-input-background text-sm"
-                    placeholder="Your location"
-                />
-            </div>
-            <div class="flex items-center gap-2 text-sm text-muted-foreground">
-                <i data-lucide="globe" class="w-4 h-4 flex-shrink-0"></i>
-                <span id="websiteDisplay">{{ profile.website|default:"Add your website" }}</span>
-                <input
-                    id="websiteInput"
-                    type="url"
-                    class="hidden px-2 py-1 border border-primary rounded bg-input-background text-sm"
-                    placeholder="https://your-website.com"
-                />
-            </div>
-        </div>
         
         <!-- Level, XP, and Joined Date -->
         <div class="space-y-3 mb-6 text-sm text-muted-foreground">
