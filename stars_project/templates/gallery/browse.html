@@ -17,14 +17,15 @@
                     {% endif %}
                 </p>
             </div>
-            
+
             <!-- Search Bar -->
             <div class="flex-1 max-w-md">
                 <form method="get" class="relative">
-                    <input type="text" name="q" value="{{ search_query }}" 
-                           placeholder="Search artworks, artists, tags..."
-                           class="w-full pl-4 pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-foreground">
-                    <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <input type="text" name="q" value="{{ search_query }}"
+                        placeholder="Search artworks, artists, tags..."
+                        class="w-full pl-4 pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-foreground">
+                    <button type="submit"
+                        class="absolute right-2 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground">
                         <i data-lucide="search" class="w-5 h-5"></i>
                     </button>
                 </form>
@@ -37,298 +38,354 @@
                 {% if search_query %}
                 <input type="hidden" name="q" value="{{ search_query }}">
                 {% endif %}
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Category Filter -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
-                        <select name="category" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm dark:bg-gray-700 dark:text-white">
-                            <option value="">All Categories</option>
-                            {% for category in categories %}
-                            <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>
-                                {{ category.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Sort Order -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sort By</label>
-                        <select name="sort" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm dark:bg-gray-700 dark:text-white">
-                            <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
-                            <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Oldest First</option>
-                            <option value="popular" {% if sort_by == 'popular' %}selected{% endif %}>Most Popular</option>
-                            <option value="views" {% if sort_by == 'views' %}selected{% endif %}>Most Viewed</option>
-                            <option value="likes" {% if sort_by == 'likes' %}selected{% endif %}>Most Liked</option>
-                        </select>
-                    </div>
-
-                    <!-- Tags Filter -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tags</label>
-                        <input type="text" name="tags" value="{{ selected_tags }}" 
-                               placeholder="e.g., digital, portrait"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm dark:bg-gray-700 dark:text-white">
-                    </div>
-
-                    <!-- Filter Actions -->
-                    <div class="flex items-end gap-2">
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm">
-                            Apply Filters
-                        </button>
-                        <a href="{% url 'gallery:browse' %}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
-                            Clear
-                        </a>
-                    </div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tags</label>
+                    <input type="text" name="tags" value="{{ selected_tags }}" placeholder="e.g., digital, portrait"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm dark:bg-gray-700 dark:text-white">
                 </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- Results Summary -->
+                <!-- Filter Actions -->
+                <div class="flex items-end gap-2">
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm">
+                        Apply Filters
+                    </button>
+                    <a href="{% url 'gallery:browse' %}"
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
+                        Clear
+                    </a>
+                </div>
+        </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Summary -->
+{% if artworks %}
+<div class="flex items-center justify-between mb-6">
+    <p class="text-gray-600 dark:text-gray-400">
+        Showing {{ artworks|length }} of {{ total_count }} artworks
+    </p>
+
+    <!-- View Toggle -->
+    <div class="flex items-center space-x-2">
+        <span class="text-sm text-gray-600 dark:text-gray-400">View:</span>
+        <button id="gridView" class="p-2 rounded-md bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400">
+            <i data-lucide="grid-3x3" class="w-4 h-4"></i>
+        </button>
+        <button id="listView" class="p-2 rounded-md text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <i data-lucide="list" class="w-4 h-4"></i>
+        </button>
+    </div>
+</div>
+{% endif %}
+
+<!-- Artwork Grid -->
+<div id="artworkContainer">
     {% if artworks %}
-    <div class="flex items-center justify-between mb-6">
-        <p class="text-gray-600 dark:text-gray-400">
-            Showing {{ artworks|length }} of {{ total_count }} artworks
-        </p>
-        
-        <!-- View Toggle -->
-        <div class="flex items-center space-x-2">
-            <span class="text-sm text-gray-600 dark:text-gray-400">View:</span>
-            <button id="gridView" class="p-2 rounded-md bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400">
-                <i data-lucide="grid-3x3" class="w-4 h-4"></i>
-            </button>
-            <button id="listView" class="p-2 rounded-md text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <i data-lucide="list" class="w-4 h-4"></i>
-            </button>
-        </div>
-    </div>
-    {% endif %}
+    <div id="gridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for artwork in artworks %}
+        <div
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow group">
+            <!-- Artwork Image -->
+            <div class="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
+                {% if artwork.thumbnail %}
+                <img src="{{ artwork.thumbnail|cloudinary_thumbnail:'400x400' }}" alt="{{ artwork.title }}"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                {% elif artwork.image %}
+                <img src="{{ artwork.image|cloudinary_thumbnail:'400x400' }}" alt="{{ artwork.title }}"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center">
+                    <i data-lucide="image" class="w-12 h-12 text-gray-400"></i>
+                </div>
+                {% endif %}
+            </div>
 
-    <!-- Artwork Grid -->
-    <div id="artworkContainer">
-        {% if artworks %}
-        <div id="gridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {% for artwork in artworks %}
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow group">
-                <!-- Artwork Image -->
-                <div class="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-                    {% if artwork.thumbnail %}
-                    <img src="{{ artwork.thumbnail|cloudinary_thumbnail:'400x400' }}" alt="{{ artwork.title }}" 
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    {% elif artwork.image %}
-                    <img src="{{ artwork.image|cloudinary_thumbnail:'400x400' }}" alt="{{ artwork.title }}" 
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    {% else %}
-                    <div class="w-full h-full flex items-center justify-center">
-                        <i data-lucide="image" class="w-12 h-12 text-gray-400"></i>
+            <!-- Artwork Info -->
+            <div class="p-4">
+                <h3 class="font-semibold text-gray-900 dark:text-white mb-1 truncate">
+                    <a href="{% url 'gallery:artwork_detail' artwork.pk %}"
+                        class="hover:text-blue-600 dark:hover:text-blue-400">
+                        {{ artwork.title }}
+                    </a>
+                </h3>
+
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    by <a href="{% url 'users:profile_detail' artwork.artist.username %}"
+                        class="hover:text-blue-600 dark:hover:text-blue-400">{{ artwork.artist.username }}</a>
+                </p>
+
+                <!-- Stats -->
+                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <div class="flex items-center space-x-3">
+                        <button class="flex items-center hover:text-red-500 transition-colors like-btn group/like"
+                            data-artwork-id="{{ artwork.pk }}" {% if not user.is_authenticated
+                            %}onclick="window.location.href='{% url 'users:login' %}?next={{ request.path }}'" {% endif
+                            %}>
+                            <i data-lucide="heart"
+                                class="w-3 h-3 mr-1 {% if artwork.is_liked %}fill-red-500 text-red-500{% else %}group-hover/like:text-red-500{% endif %}"></i>
+                            <span class="like-count">{{ artwork.likes_count }}</span>
+                        </button>
+                        <span class="flex items-center">
+                            <i data-lucide="eye" class="w-3 h-3 mr-1"></i>
+                            {{ artwork.views }}
+                        </span>
                     </div>
+                    <span>{{ artwork.created_at|date:"M d" }}</span>
+                </div>
+
+                <!-- Tags -->
+                {% if artwork.tags.all %}
+                <div class="mt-2 flex flex-wrap gap-1">
+                    {% for tag in artwork.tags.all|slice:":3" %}
+                    <span
+                        class="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-400 rounded">
+                        {{ tag.name }}
+                    </span>
+                    {% endfor %}
+                    {% if artwork.tags.count > 3 %}
+                    <span
+                        class="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-400 rounded">
+                        +{{ artwork.tags.count|add:"-3" }}
+                    </span>
                     {% endif %}
                 </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
-                <!-- Artwork Info -->
-                <div class="p-4">
-                    <h3 class="font-semibold text-gray-900 dark:text-white mb-1 truncate">
-                        <a href="{% url 'gallery:artwork_detail' artwork.pk %}" class="hover:text-blue-600 dark:hover:text-blue-400">
-                            {{ artwork.title }}
-                        </a>
-                    </h3>
-                    
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        by <a href="{% url 'users:profile_detail' artwork.artist.username %}" 
-                              class="hover:text-blue-600 dark:hover:text-blue-400">{{ artwork.artist.username }}</a>
-                    </p>
+    <!-- List View (Hidden by default) -->
+    <div id="listContainer" class="hidden space-y-4">
+        {% for artwork in artworks %}
+        <div
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex items-center gap-6">
+            <!-- Thumbnail -->
+            <div class="w-24 h-24 flex-shrink-0 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+                {% if artwork.thumbnail %}
+                <img src="{{ artwork.thumbnail|cloudinary_thumbnail:'96x96' }}" alt="{{ artwork.title }}"
+                    class="w-full h-full object-cover">
+                {% elif artwork.image %}
+                <img src="{{ artwork.image|cloudinary_thumbnail:'96x96' }}" alt="{{ artwork.title }}"
+                    class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center">
+                    <i data-lucide="image" class="w-8 h-8 text-gray-400"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Details -->
+            <div class="flex-1">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+                            <a href="{% url 'gallery:artwork_detail' artwork.pk %}"
+                                class="hover:text-blue-600 dark:hover:text-blue-400">
+                                {{ artwork.title }}
+                            </a>
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-2">
+                            by <a href="{% url 'users:profile_detail' artwork.artist.username %}"
+                                class="hover:text-blue-600 dark:hover:text-blue-400">{{ artwork.artist.username
+                                }}</a>
+                        </p>
+                        {% if artwork.description %}
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                            {{ artwork.description|truncatewords:30 }}
+                        </p>
+                        {% endif %}
+                    </div>
 
                     <!-- Stats -->
-                    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                        <div class="flex items-center space-x-3">
+                    <div class="text-right text-sm text-gray-500 dark:text-gray-400">
+                        <div class="flex items-center space-x-4 mb-1">
+                            <button class="flex items-center hover:text-red-500 transition-colors like-btn group/like"
+                                data-artwork-id="{{ artwork.pk }}" {% if not user.is_authenticated
+                                %}onclick="window.location.href='{% url 'users:login' %}?next={{ request.path }}'" {%
+                                endif %}>
+                                <i data-lucide="heart"
+                                    class="w-4 h-4 mr-1 {% if artwork.is_liked %}fill-red-500 text-red-500{% else %}group-hover/like:text-red-500{% endif %}"></i>
+                                <span class="like-count">{{ artwork.likes_count }}</span>
+                            </button>
                             <span class="flex items-center">
-                                <i data-lucide="heart" class="w-3 h-3 mr-1"></i>
-                                {{ artwork.likes_count }}
-                            </span>
-                            <span class="flex items-center">
-                                <i data-lucide="eye" class="w-3 h-3 mr-1"></i>
+                                <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
                                 {{ artwork.views }}
                             </span>
                         </div>
-                        <span>{{ artwork.created_at|date:"M d" }}</span>
+                        <div>{{ artwork.created_at|date:"M d, Y" }}</div>
                     </div>
-
-                    <!-- Tags -->
-                    {% if artwork.tags.all %}
-                    <div class="mt-2 flex flex-wrap gap-1">
-                        {% for tag in artwork.tags.all|slice:":3" %}
-                        <span class="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-400 rounded">
-                            {{ tag.name }}
-                        </span>
-                        {% endfor %}
-                        {% if artwork.tags.count > 3 %}
-                        <span class="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-400 rounded">
-                            +{{ artwork.tags.count|add:"-3" }}
-                        </span>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <!-- List View (Hidden by default) -->
-        <div id="listContainer" class="hidden space-y-4">
-            {% for artwork in artworks %}
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex items-center gap-6">
-                <!-- Thumbnail -->
-                <div class="w-24 h-24 flex-shrink-0 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-                    {% if artwork.thumbnail %}
-                    <img src="{{ artwork.thumbnail|cloudinary_thumbnail:'96x96' }}" alt="{{ artwork.title }}" class="w-full h-full object-cover">
-                    {% elif artwork.image %}
-                    <img src="{{ artwork.image|cloudinary_thumbnail:'96x96' }}" alt="{{ artwork.title }}" class="w-full h-full object-cover">
-                    {% else %}
-                    <div class="w-full h-full flex items-center justify-center">
-                        <i data-lucide="image" class="w-8 h-8 text-gray-400"></i>
-                    </div>
-                    {% endif %}
                 </div>
 
-                <!-- Details -->
-                <div class="flex-1">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
-                                <a href="{% url 'gallery:artwork_detail' artwork.pk %}" class="hover:text-blue-600 dark:hover:text-blue-400">
-                                    {{ artwork.title }}
-                                </a>
-                            </h3>
-                            <p class="text-gray-600 dark:text-gray-400 mb-2">
-                                by <a href="{% url 'users:profile_detail' artwork.artist.username %}" 
-                                      class="hover:text-blue-600 dark:hover:text-blue-400">{{ artwork.artist.username }}</a>
-                            </p>
-                            {% if artwork.description %}
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                                {{ artwork.description|truncatewords:30 }}
-                            </p>
-                            {% endif %}
-                        </div>
-                        
-                        <!-- Stats -->
-                        <div class="text-right text-sm text-gray-500 dark:text-gray-400">
-                            <div class="flex items-center space-x-4 mb-1">
-                                <span class="flex items-center">
-                                    <i data-lucide="heart" class="w-4 h-4 mr-1"></i>
-                                    {{ artwork.likes_count }}
-                                </span>
-                                <span class="flex items-center">
-                                    <i data-lucide="eye" class="w-4 h-4 mr-1"></i>
-                                    {{ artwork.views }}
-                                </span>
-                            </div>
-                            <div>{{ artwork.created_at|date:"M d, Y" }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Tags -->
-                    {% if artwork.tags.all %}
-                    <div class="flex flex-wrap gap-1 mt-2">
-                        {% for tag in artwork.tags.all %}
-                        <span class="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-400 rounded">
-                            {{ tag.name }}
-                        </span>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
+                <!-- Tags -->
+                {% if artwork.tags.all %}
+                <div class="flex flex-wrap gap-1 mt-2">
+                    {% for tag in artwork.tags.all %}
+                    <span
+                        class="inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-400 rounded">
+                        {{ tag.name }}
+                    </span>
+                    {% endfor %}
                 </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <!-- Pagination -->
-        {% if is_paginated %}
-        <div class="mt-8 flex justify-center">
-            <nav class="flex items-center space-x-2">
-                {% if page_obj.has_previous %}
-                <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ page_obj.previous_page_number }}" 
-                   class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    Previous
-                </a>
                 {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 
-                {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                <span class="px-3 py-2 bg-blue-600 text-white rounded-md">{{ num }}</span>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}" 
-                   class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    {{ num }}
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="mt-8 flex justify-center">
+        <nav class="flex items-center space-x-2">
+            {% if page_obj.has_previous %}
+            <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                Previous
+            </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="px-3 py-2 bg-blue-600 text-white rounded-md">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a
+                href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}"
+                class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                {{ num }}
                 </a>
                 {% endif %}
                 {% endfor %}
 
                 {% if page_obj.has_next %}
-                <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ page_obj.next_page_number }}" 
-                   class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ page_obj.next_page_number }}"
+                    class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
                     Next
                 </a>
                 {% endif %}
-            </nav>
-        </div>
-        {% endif %}
+        </nav>
+    </div>
+    {% endif %}
 
-        {% else %}
-        <!-- No Results -->
-        <div class="text-center py-12">
-            <i data-lucide="search-x" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No artworks found</h3>
-            <p class="text-gray-600 dark:text-gray-400 mb-4">
-                {% if search_query %}
-                Try adjusting your search terms or filters.
-                {% else %}
-                Be the first to share your artwork!
-                {% endif %}
-            </p>
-            {% if request.user.is_authenticated %}
-            <a href="{% url 'gallery:upload' %}" 
-               class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
-                Upload Artwork
-            </a>
+    {% else %}
+    <!-- No Results -->
+    <div class="text-center py-12">
+        <i data-lucide="search-x" class="w-16 h-16 text-gray-400 mx-auto mb-4"></i>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No artworks found</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+            {% if search_query %}
+            Try adjusting your search terms or filters.
+            {% else %}
+            Be the first to share your artwork!
             {% endif %}
-        </div>
+        </p>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'gallery:upload' %}"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
+            Upload Artwork
+        </a>
         {% endif %}
     </div>
+    {% endif %}
+</div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const gridView = document.getElementById('gridView');
-    const listView = document.getElementById('listView');
-    const gridContainer = document.getElementById('gridContainer');
-    const listContainer = document.getElementById('listContainer');
+    document.addEventListener('DOMContentLoaded', function () {
+        const gridView = document.getElementById('gridView');
+        const listView = document.getElementById('listView');
+        const gridContainer = document.getElementById('gridContainer');
+        const listContainer = document.getElementById('listContainer');
 
-    // View toggle functionality
-    gridView.addEventListener('click', () => {
-        gridContainer.classList.remove('hidden');
-        listContainer.classList.add('hidden');
-        gridView.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-600', 'dark:text-blue-400');
-        gridView.classList.remove('text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
-        listView.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-600', 'dark:text-blue-400');
-        listView.classList.add('text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+        // View toggle functionality
+        if (gridView && listView && gridContainer && listContainer) {
+            gridView.addEventListener('click', () => {
+                gridContainer.classList.remove('hidden');
+                listContainer.classList.add('hidden');
+                gridView.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-600', 'dark:text-blue-400');
+                gridView.classList.remove('text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+                listView.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-600', 'dark:text-blue-400');
+                listView.classList.add('text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+            });
+
+            listView.addEventListener('click', () => {
+                gridContainer.classList.add('hidden');
+                listContainer.classList.remove('hidden');
+                listView.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-600', 'dark:text-blue-400');
+                listView.classList.remove('text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+                gridView.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-600', 'dark:text-blue-400');
+                gridView.classList.add('text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
+            });
+        }
+
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        // Like functionality
+        const likeButtons = document.querySelectorAll('.like-btn');
+        likeButtons.forEach(btn => {
+            btn.addEventListener('click', async function (e) {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent triggering card click
+
+                const artworkId = this.dataset.artworkId;
+                if (!artworkId) return;
+
+                try {
+                    const response = await fetch(`/gallery/artwork/${artworkId}/like/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Lucide replaces <i> with <svg>, so we need to find the svg
+                        const icon = this.querySelector('svg') || this.querySelector('i');
+                        const countSpan = this.querySelector('.like-count');
+
+                        // Update count
+                        if (countSpan) {
+                            countSpan.textContent = data.likes_count;
+                        }
+
+                        // Update icon style
+                        if (icon) {
+                            if (data.liked) {
+                                icon.classList.add('fill-red-500', 'text-red-500');
+                            } else {
+                                icon.classList.remove('fill-red-500', 'text-red-500');
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error liking artwork:', error);
+                }
+            });
+        });
+
+        // Helper to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     });
-
-    listView.addEventListener('click', () => {
-        gridContainer.classList.add('hidden');
-        listContainer.classList.remove('hidden');
-        listView.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-600', 'dark:text-blue-400');
-        listView.classList.remove('text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
-        gridView.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-600', 'dark:text-blue-400');
-        gridView.classList.add('text-gray-400', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
-    });
-
-    // Initialize Lucide icons
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-});
 </script>
 {% endblock %}

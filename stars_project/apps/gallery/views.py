@@ -2,57 +2,42 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Exists, OuterRef
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+
 from django.contrib import messages
-from .models import Artwork, Category, Tag, ArtworkLike
+from .models import Artwork, Category, ArtworkLike
 from apps.users.models import UserSearchHistory
-import json
+
 
 @login_required
 def dashboard_view(request):
-    """Dashboard view showing user's artworks and stats"""
-    # Get user stats
+    """User dashboard view"""
     profile = request.user.userprofile
-    
-    # Get user's artworks
-    user_artworks = Artwork.objects.filter(artist=request.user).order_by('-created_at')[:6]
-    
-    # Get recent artworks from followed artists (placeholder for now)
-    recent_artworks = Artwork.objects.filter(visibility='public').exclude(artist=request.user).order_by('-created_at')[:8]
-    
-    # Get trending artworks (most liked in last week)
-    trending_artworks = Artwork.objects.filter(visibility='public').annotate(
-        like_count=Count('likes')
-    ).order_by('-like_count', '-created_at')[:6]
-    
-    # Stats
     stats = {
         'artwork_created': profile.artwork_created,
-        'total_xp': profile.total_xp,
         'level': profile.level,
-        'total_likes': sum(artwork.likes_count for artwork in user_artworks),
-        'total_views': sum(artwork.views for artwork in user_artworks),
-        'total_shares': sum(artwork.shares_count for artwork in user_artworks),
-        'followers': profile.follower_count,
-        'following': profile.following_count,
+        'total_xp': profile.total_xp,
     }
     
     context = {
-        'user': request.user,
         'profile': profile,
-        'user_artworks': user_artworks,
-        'recent_artworks': recent_artworks,
-        'trending_artworks': trending_artworks,
         'stats': stats,
+        'recent_artworks': Artwork.objects.filter(artist=request.user).order_by('-created_at')[:5],
     }
-    
     return render(request, 'gallery/dashboard.html', context)
 
 def browse(request):
     """Browse artworks with search and filtering"""
     artworks = Artwork.objects.filter(visibility='public').select_related('artist', 'category').prefetch_related('tags')
+    
+    if request.user.is_authenticated:
+        is_liked = ArtworkLike.objects.filter(
+            artwork=OuterRef('pk'),
+            user=request.user
+        )
+        artworks = artworks.annotate(is_liked=Exists(is_liked))
     
     # Search functionality
     search_query = request.GET.get('q', '').strip()

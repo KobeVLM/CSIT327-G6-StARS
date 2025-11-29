@@ -7,11 +7,11 @@
 <div class="p-8 max-w-7xl">
     <!-- Success Message -->
     {% if messages %}
-        {% for message in messages %}
-            <div class="bg-success/10 border border-success/20 rounded-lg px-4 py-3 mb-6">
-                <span class="text-success text-sm">{{ message }}</span>
-            </div>
-        {% endfor %}
+    {% for message in messages %}
+    <div class="bg-success/10 border border-success/20 rounded-lg px-4 py-3 mb-6">
+        <span class="text-success text-sm">{{ message }}</span>
+    </div>
+    {% endfor %}
     {% endif %}
 
     <!-- Profile Header -->
@@ -20,14 +20,15 @@
             <div class="flex items-start gap-4 flex-1">
                 <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     {% if profile.avatar %}
-                        <img src="{{ profile.avatar.url }}" alt="{{ user.username }}" class="w-full h-full object-cover rounded-full" />
+                    <img src="{{ profile.avatar.url }}" alt="{{ user.username }}"
+                        class="w-full h-full object-cover rounded-full" />
                     {% else %}
-                        <span class="text-primary text-3xl font-semibold">
-                            {{ user.get_full_name|default:user.username|first|upper }}
-                        </span>
+                    <span class="text-primary text-3xl font-semibold">
+                        {{ user.get_full_name|default:user.username|first|upper }}
+                    </span>
                     {% endif %}
                 </div>
-                
+
                 <div class="flex-1">
                     <h1 class="text-2xl font-semibold mb-2 text-gray-900">
                         {{ user.get_full_name|default:user.username }}
@@ -38,25 +39,19 @@
 
             <!-- Edit/Save/Cancel Buttons -->
             <div class="flex gap-2">
-                <button
-                    id="editProfileBtn"
-                    class="bg-primary text-primary-foreground px-4 py-2 rounded hover:opacity-90 transition-opacity inline-flex items-center gap-2 text-sm font-medium"
-                >
+                <button id="editProfileBtn"
+                    class="bg-primary text-primary-foreground px-4 py-2 rounded hover:opacity-90 transition-opacity inline-flex items-center gap-2 text-sm font-medium">
                     <i data-lucide="edit" class="w-4 h-4"></i>
                     Edit Profile
                 </button>
-                <button
-                    id="saveProfileBtn"
+                <button id="saveProfileBtn"
                     class="hidden bg-success text-success-foreground w-9 h-9 rounded hover:opacity-90 transition-opacity inline-flex items-center justify-center"
-                    title="Save changes"
-                >
+                    title="Save changes">
                     <i data-lucide="check" class="w-5 h-5"></i>
                 </button>
-                <button
-                    id="cancelProfileBtn"
+                <button id="cancelProfileBtn"
                     class="hidden bg-destructive text-destructive-foreground w-9 h-9 rounded hover:opacity-90 transition-opacity inline-flex items-center justify-center"
-                    title="Cancel"
-                >
+                    title="Cancel">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -67,12 +62,9 @@
             <div id="bioDisplay" class="text-sm text-foreground leading-relaxed">
                 {{ profile.bio|default:"Add a bio to tell others about yourself and your artistic journey." }}
             </div>
-            <textarea
-                id="bioInput"
+            <textarea id="bioInput"
                 class="hidden w-full px-3 py-2 border border-primary rounded bg-input-background resize-none text-sm leading-relaxed"
-                rows="3"
-                placeholder="Write your bio..."
-            ></textarea>
+                rows="3" placeholder="Write your bio..."></textarea>
         </div>
 
         <!-- Location and Website - Editable inline -->
@@ -80,25 +72,19 @@
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
                 <i data-lucide="map-pin" class="w-4 h-4 flex-shrink-0"></i>
                 <span id="locationDisplay">{{ profile.location|default:"Add your location" }}</span>
-                <input
-                    id="locationInput"
-                    type="text"
+                <input id="locationInput" type="text"
                     class="hidden px-2 py-1 border border-primary rounded bg-input-background text-sm"
-                    placeholder="Your location"
-                />
+                    placeholder="Your location" />
             </div>
             <div class="flex items-center gap-2 text-sm text-muted-foreground">
                 <i data-lucide="globe" class="w-4 h-4 flex-shrink-0"></i>
                 <span id="websiteDisplay">{{ profile.website|default:"Add your website" }}</span>
-                <input
-                    id="websiteInput"
-                    type="url"
+                <input id="websiteInput" type="url"
                     class="hidden px-2 py-1 border border-primary rounded bg-input-background text-sm"
-                    placeholder="https://your-website.com"
-                />
+                    placeholder="https://your-website.com" />
             </div>
         </div>
-        
+
         <!-- Level, XP, and Joined Date -->
         <div class="space-y-3 mb-6 text-sm text-muted-foreground">
             <div class="flex items-center gap-2">
@@ -159,90 +145,88 @@
             <i data-lucide="image" class="w-12 h-12 text-gray-500 mx-auto mb-4"></i>
             <h3 class="text-lg font-semibold mb-2 text-gray-900">No artworks yet</h3>
             <p class="text-sm text-gray-600 mb-4">Start sharing your creative work with the community!</p>
-            <button 
-                onclick="alert('Upload feature coming soon!')"
-                class="bg-primary text-primary-foreground px-4 py-2 rounded hover:opacity-90 transition-opacity text-sm font-medium"
-            >
+            <a href="{% url 'gallery:upload' %}"
+                class="bg-primary text-primary-foreground px-4 py-2 rounded hover:opacity-90 transition-opacity text-sm font-medium inline-block">
                 Upload Your First Artwork
-            </button>
+            </a>
         </div>
     </div>
 </div>
 
 <script>
-// Enhanced inline profile editing functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const editBtn = document.getElementById('editProfileBtn');
-    const saveBtn = document.getElementById('saveProfileBtn');
-    const cancelBtn = document.getElementById('cancelProfileBtn');
-    
-    const bioDisplay = document.getElementById('bioDisplay');
-    const bioInput = document.getElementById('bioInput');
-    const locationDisplay = document.getElementById('locationDisplay');
-    const locationInput = document.getElementById('locationInput');
-    const websiteDisplay = document.getElementById('websiteDisplay');
-    const websiteInput = document.getElementById('websiteInput');
-    
-    let originalValues = {};
+    // Enhanced inline profile editing functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const editBtn = document.getElementById('editProfileBtn');
+        const saveBtn = document.getElementById('saveProfileBtn');
+        const cancelBtn = document.getElementById('cancelProfileBtn');
 
-    if (editBtn) {
-        editBtn.addEventListener('click', function() {
-            // Store original values
-            originalValues.bio = bioDisplay.textContent;
-            originalValues.location = locationDisplay.textContent;
-            originalValues.website = websiteDisplay.textContent;
-            
-            // Set input values
-            bioInput.value = originalValues.bio;
-            locationInput.value = originalValues.location;
-            websiteInput.value = originalValues.website;
-            
-            // Toggle visibility
-            editBtn.classList.add('hidden');
-            saveBtn.classList.remove('hidden');
-            cancelBtn.classList.remove('hidden');
-            
-            bioDisplay.classList.add('hidden');
-            bioInput.classList.remove('hidden');
-            locationDisplay.classList.add('hidden');
-            locationInput.classList.remove('hidden');
-            websiteDisplay.classList.add('hidden');
-            websiteInput.classList.remove('hidden');
-        });
-    }
+        const bioDisplay = document.getElementById('bioDisplay');
+        const bioInput = document.getElementById('bioInput');
+        const locationDisplay = document.getElementById('locationDisplay');
+        const locationInput = document.getElementById('locationInput');
+        const websiteDisplay = document.getElementById('websiteDisplay');
+        const websiteInput = document.getElementById('websiteInput');
 
-    if (saveBtn) {
-        saveBtn.addEventListener('click', function() {
-            // Update hidden form inputs
-            document.getElementById('bioFormInput').value = bioInput.value;
-            document.getElementById('locationFormInput').value = locationInput.value;
-            document.getElementById('websiteFormInput').value = websiteInput.value;
-            
-            // Submit the form
-            document.getElementById('profileUpdateForm').submit();
-        });
-    }
+        let originalValues = {};
 
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', function() {
-            // Reset to original values
-            bioInput.value = originalValues.bio;
-            locationInput.value = originalValues.location;
-            websiteInput.value = originalValues.website;
-            
-            // Toggle visibility back
-            editBtn.classList.remove('hidden');
-            saveBtn.classList.add('hidden');
-            cancelBtn.classList.add('hidden');
-            
-            bioDisplay.classList.remove('hidden');
-            bioInput.classList.add('hidden');
-            locationDisplay.classList.remove('hidden');
-            locationInput.classList.add('hidden');
-            websiteDisplay.classList.remove('hidden');
-            websiteInput.classList.add('hidden');
-        });
-    }
-});
+        if (editBtn) {
+            editBtn.addEventListener('click', function () {
+                // Store original values
+                originalValues.bio = bioDisplay.textContent;
+                originalValues.location = locationDisplay.textContent;
+                originalValues.website = websiteDisplay.textContent;
+
+                // Set input values
+                bioInput.value = originalValues.bio;
+                locationInput.value = originalValues.location;
+                websiteInput.value = originalValues.website;
+
+                // Toggle visibility
+                editBtn.classList.add('hidden');
+                saveBtn.classList.remove('hidden');
+                cancelBtn.classList.remove('hidden');
+
+                bioDisplay.classList.add('hidden');
+                bioInput.classList.remove('hidden');
+                locationDisplay.classList.add('hidden');
+                locationInput.classList.remove('hidden');
+                websiteDisplay.classList.add('hidden');
+                websiteInput.classList.remove('hidden');
+            });
+        }
+
+        if (saveBtn) {
+            saveBtn.addEventListener('click', function () {
+                // Update hidden form inputs
+                document.getElementById('bioFormInput').value = bioInput.value;
+                document.getElementById('locationFormInput').value = locationInput.value;
+                document.getElementById('websiteFormInput').value = websiteInput.value;
+
+                // Submit the form
+                document.getElementById('profileUpdateForm').submit();
+            });
+        }
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function () {
+                // Reset to original values
+                bioInput.value = originalValues.bio;
+                locationInput.value = originalValues.location;
+                websiteInput.value = originalValues.website;
+
+                // Toggle visibility back
+                editBtn.classList.remove('hidden');
+                saveBtn.classList.add('hidden');
+                cancelBtn.classList.add('hidden');
+
+                bioDisplay.classList.remove('hidden');
+                bioInput.classList.add('hidden');
+                locationDisplay.classList.remove('hidden');
+                locationInput.classList.add('hidden');
+                websiteDisplay.classList.remove('hidden');
+                websiteInput.classList.add('hidden');
+            });
+        }
+    });
 </script>
 {% endblock %}

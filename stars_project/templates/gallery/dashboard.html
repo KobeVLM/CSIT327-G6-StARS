@@ -21,23 +21,19 @@
         <!-- Search Bar -->
         <div class="relative">
             <div class="relative">
-                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"></i>
-                <input
-                    type="text"
-                    id="dashboardSearch"
-                    placeholder="Search..."
-                    class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 placeholder-gray-500"
-                />
-                <button
-                    id="clearSearch"
-                    class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900"
-                >
+                <i data-lucide="search"
+                    class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                <input type="text" id="dashboardSearch" placeholder="Search..."
+                    class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 placeholder-gray-500" />
+                <button id="clearSearch"
+                    class="hidden absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
 
             <!-- Search Results -->
-            <div id="searchResults" class="hidden absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-20">
+            <div id="searchResults"
+                class="hidden absolute top-full mt-2 w-full bg-white rounded-lg shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-20">
                 <div class="p-8 text-center">
                     <p class="text-sm text-gray-500">No results found.</p>
                 </div>
@@ -88,13 +84,11 @@
             <p class="text-sm text-gray-600 mb-4">
                 Share your latest artwork with the community
             </p>
-            <button
-                onclick="alert('Upload feature coming soon!')"
-                class="bg-primary text-primary-foreground px-6 py-2.5 rounded hover:opacity-90 transition-opacity inline-flex items-center gap-2 text-sm font-medium"
-            >
+            <a href="{% url 'gallery:upload' %}"
+                class="bg-primary text-primary-foreground px-6 py-2.5 rounded hover:opacity-90 transition-opacity inline-flex items-center gap-2 text-sm font-medium">
                 <i data-lucide="upload" class="w-4 h-4"></i>
                 Upload Artwork
-            </button>
+            </a>
         </div>
 
         <div class="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
@@ -105,10 +99,8 @@
             <p class="text-sm text-gray-600 mb-4">
                 Update your information and preferences
             </p>
-            <a
-                href="{% url 'users:profile' %}"
-                class="bg-secondary text-gray-900 px-6 py-2.5 rounded hover:bg-secondary/80 transition-colors text-sm font-medium inline-block"
-            >
+            <a href="{% url 'users:profile' %}"
+                class="bg-secondary text-gray-900 px-6 py-2.5 rounded hover:bg-secondary/80 transition-colors text-sm font-medium inline-block">
                 Go to Profile
             </a>
         </div>
@@ -125,7 +117,7 @@
                     <div class="text-xs text-gray-500 mt-1">Just now</div>
                 </div>
             </div>
-            
+
             <div class="flex items-start gap-3 pb-3 border-b border-gray-200">
                 <div class="w-2 h-2 rounded-full bg-success mt-2"></div>
                 <div class="flex-1">
@@ -133,7 +125,7 @@
                     <div class="text-xs text-gray-500 mt-1">Today</div>
                 </div>
             </div>
-            
+
             <div class="flex items-start gap-3">
                 <div class="w-2 h-2 rounded-full bg-yellow-500 mt-2"></div>
                 <div class="flex-1">
